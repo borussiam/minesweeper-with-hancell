@@ -57,3 +57,21 @@ Private Sub CountMines()
 		Next c
 	Next r
 End Sub
+
+Public Function IsBoardCell(ByVal Target As Range) As Boolean
+    Dim boardRange As Range
+
+    If Target.Count > 1 Then
+        IsBoardCell = False
+        Exit Function
+    End If
+
+    Set boardRange = Target.Worksheet.Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS)
+
+    IsBoardCell = Not Intersect(Target, boardRange) Is Nothing
+End Function
+
+Public Sub CellToBoardPos(ByVal Target As Range, ByRef r As Long, ByRef c As Long)
+    r = Target.Row - BOARD_TOP + 1
+    c = Target.Column - BOARD_LEFT + 1
+End Sub

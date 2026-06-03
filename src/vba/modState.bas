@@ -7,6 +7,7 @@ Public Flagged() As Boolean
 Public MineCount() As Integer
 
 Public GameRunning As Boolean
+Public CurrentMode As Long
 
 Public Sub InitState()
     ReDim Mine(1 To BOARD_ROWS, 1 To BOARD_COLS)
@@ -15,4 +16,5 @@ Public Sub InitState()
     ReDim MineCount(1 To BOARD_ROWS, 1 To BOARD_COLS)
 
     GameRunning = True
+    CurrentMode = MODE_OPEN
 End Sub
