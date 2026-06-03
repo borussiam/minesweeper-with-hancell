@@ -1,4 +1,5 @@
 Option Explicit
+Option Private Module
 
 Public Const BOARD_ROWS As Long = 10
 Public Const BOARD_COLS As Long = 10

@@ -1,4 +1,5 @@
 Option Explicit
+Option Private Module
 
 Public Mine() As Boolean
 Public Opened() As Boolean

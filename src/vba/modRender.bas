@@ -1,15 +1,22 @@
 Option Explicit
+'Option Private Module
 
 Public Sub InitBoard()
+	ClearSheet
 	FormatBoard
 	WriteStatus
+End Sub
+
+Private Sub ClearSheet()
+    Cells.Clear
+
+    Columns.ColumnWidth = 2.78
+    Rows.RowHeight = 24
 End Sub
 
 Private Sub FormatBoard()
 	With Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS)
         .Interior.Color = RGB(230, 230, 230)
-        .ColumnWidth = 2.78
-        .RowHeight = 24
         .HorizontalAlignment = xlCenter
         .VerticalAlignment = xlCenter
         .Borders.LineStyle = xlContinuous

@@ -1,4 +1,5 @@
 Option Explicit
+Option Private Module
 
 Public Sub InitMines()
 	Randomize
