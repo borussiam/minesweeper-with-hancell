@@ -23,6 +23,7 @@ Anything is possible at the Ministry of National Defense...
 - Add win condition checking
 
 **Truly playable from here!** (but still extremely unfriendly)
+- Disable range selection to prevent confusion
 
 ## Current Module Structure
 - `modConfig`: Configuration values (e.g. board size and mine count)
@@ -35,7 +36,6 @@ Anything is possible at the Ministry of National Defense...
 - Add cell reveal logic for "openings"
 - Complete game status logic(ready, ongoing, win, game over)
 - First click should not be a mine
-- Disable range selection to prevent confusion
 - Add (total mine count - flag count)
 - Add timer
 - Edit gameboard and buttons layout & design

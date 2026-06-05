@@ -60,8 +60,25 @@ End Sub
 
 Public Function IsBoardCell(ByVal Target As Range) As Boolean
     Dim boardRange As Range
+	Dim sr As Long, sc As Long
 
     If Target.Count > 1 Then
+		sr = ActiveWindow.ScrollRow
+		sc = ActiveWindow.ScrollColumn
+		On Error GoTo CleanUp
+
+		Application.EnableEvents = False
+		Application.ScreenUpdating = False
+
+		GameSheet.Range("XFD1048576").Select
+
+		ActiveWindow.ScrollRow = sr
+    	ActiveWindow.ScrollColumn = sc
+
+	CleanUp:
+		Application.ScreenUpdating = True
+		Application.EnableEvents = True
+
         IsBoardCell = False
         Exit Function
     End If

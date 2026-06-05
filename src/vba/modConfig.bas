@@ -1,6 +1,8 @@
 Option Explicit
 Option Private Module
 
+Public Const SHEET_NAME As String = "Sheet1"
+
 Public Const BOARD_ROWS As Long = 10
 Public Const BOARD_COLS As Long = 10
 Public Const MINE_TOTAL As Long = 10
@@ -12,3 +14,7 @@ Public Const MODE_OPEN As Long = 1
 Public Const MODE_FLAG As Long = 2
 
 Private Const PARK_CELL As String = "XFD1048576"
+
+Public Function GameSheet() As Worksheet
+    Set GameSheet = ThisWorkbook.Worksheets(SHEET_NAME)
+End Function
