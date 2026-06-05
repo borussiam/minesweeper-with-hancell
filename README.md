@@ -17,8 +17,12 @@ Anything is possible at the Ministry of National Defense...
 - Open or flag cell when clicked
 - Trigger game over when a mine is opened
 
- **(Barely) Playable from here!**
+**(Barely) Playable from here!**
 
+### 2026-06-05
+- Add win condition checking
+
+**Truly playable from here!** (but still extremely unfriendly)
 
 ## Current Module Structure
 - `modConfig`: Configuration values (e.g. board size and mine count)
@@ -29,9 +33,10 @@ Anything is possible at the Ministry of National Defense...
 
 ## Remaining Tasks
 - Add cell reveal logic for "openings"
-- Add win condition checking
 - Complete game status logic(ready, ongoing, win, game over)
 - First click should not be a mine
+- Disable range selection to prevent confusion
+- Add (total mine count - flag count)
 - Add timer
 - Edit gameboard and buttons layout & design
   - Place images for mines and flags instead of "M" and "F"
@@ -39,3 +44,4 @@ Anything is possible at the Ministry of National Defense...
 - Add difficulty choices(beginner, intermediate, expert) and custom board sizes
 - Change smiley face expressions according to game status
 - Add No Guess Mode
+- Add Hint

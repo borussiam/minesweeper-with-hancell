@@ -49,6 +49,12 @@ Public Sub OpenCell(ByVal r As Long, ByVal c As Long)
     End If
 
     RenderCell r, c, False
+    
+    OpenedCount = OpenedCount + 1
+    If OpenedCount = BOARD_ROWS * BOARD_COLS - MINE_TOTAL Then
+        GameRunning = False
+        Cells(BOARD_TOP - 1, BOARD_LEFT).Value = "상태: 승리!"
+    End If
 End Sub
 
 Public Sub ToggleFlag(ByVal r As Long, ByVal c As Long)

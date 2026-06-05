@@ -9,6 +9,8 @@ Public MineCount() As Integer
 Public GameRunning As Boolean
 Public CurrentMode As Long
 
+Public OpenedCount As Long
+
 Public Sub InitState()
     ReDim Mine(1 To BOARD_ROWS, 1 To BOARD_COLS)
     ReDim Opened(1 To BOARD_ROWS, 1 To BOARD_COLS)
@@ -17,4 +19,5 @@ Public Sub InitState()
 
     GameRunning = True
     CurrentMode = MODE_OPEN
+    OpenedCount = 0
 End Sub
