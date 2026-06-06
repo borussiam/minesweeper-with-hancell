@@ -9,8 +9,14 @@ Public MineCount() As Integer
 Public GameStatus As Long
 Public OpenedCount As Long
 Public FlaggedCount As Long
-Public GameStartTime As Date
 Public CurrentMode As Long
+
+Public GameStartTime As Date
+Public NextTimerTime As Date
+Public TimerScheduled As Boolean
+
+Public GameStartTick As Double
+Public GameEndTick As Double
 
 Public Sub InitState()
     ReDim Mine(1 To BOARD_ROWS, 1 To BOARD_COLS)
@@ -22,4 +28,11 @@ Public Sub InitState()
     CurrentMode = MODE_OPEN
     OpenedCount = 0
     FlaggedCount = 0
+
+    GameStartTime = 0
+    NextTimerTime = 0
+    TimerScheduled = False
+
+    GameStartTick = 0
+    GameEndTick = 0
 End Sub

@@ -35,18 +35,20 @@ Anything is possible at the Ministry of National Defense...
 - Add (total mine count - flag count)
 - Show all mines at the end of a game(flags for a win, mines for a loss)
   - Triggered mine is painted red, wrong flags are painted pink
+- Add timer
+  - Down to seconds while playing, down to thousandths after the game
 
 ## Current Module Structure
 - `modConfig`: Configuration values (e.g. board size and mine count)
 - `modState`: Game state array management
-- `modGame`: Overall game flow, including starting a new game
+- `modGame`: Overall game flow, including opening/flagging cells
 - `modBoard`: Mine placement and surrounding mine count calculation
 - `modRender`: Cell rendering
+- `modTimer` : Timer control
 
 ## Remaining Tasks
 - Add chording logic
   - Implement game over by chording with wrong flag
-- Add timer
 - Edit gameboard and buttons layout & design
   - Place images for mines and flags instead of "M" and "F"
   - Color numbers and use 8-bit font if possible

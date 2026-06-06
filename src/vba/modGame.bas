@@ -1,6 +1,7 @@
 Option Explicit
 
 Public Sub NewGame()
+    StopTimer
     Application.ScreenUpdating = False
     InitState
     InitBoard
@@ -10,7 +11,7 @@ End Sub
 Private Sub StartGame(ByVal firstR As Long, ByVal firstC As Long)
     InitMines firstR, firstC
     GameStatus = GAME_ONGOING
-    GameStartTime = Now
+    StartTimer
     WriteStatus
 End Sub
 
@@ -52,19 +53,25 @@ Public Sub OpenCell(ByVal r As Long, ByVal c As Long)
     If Flagged(r, c) Then Exit Sub
 
     If Mine(r, c) Then
+        GameEndTick = Timer
         GameStatus = GAME_OVER
+        StopTimer
         RenderCell r, c, False
         RenderBoard
         WriteStatus
+        WriteTimer
         Exit Sub
     End If
 
     RevealArea r, c
     
     If OpenedCount = BOARD_ROWS * BOARD_COLS - MINE_TOTAL Then
+        GameEndTick = Timer
         GameStatus = GAME_WIN
+        StopTimer
         RenderBoard
         WriteStatus
+        WriteTimer
     End If
 End Sub
 

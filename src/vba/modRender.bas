@@ -5,6 +5,7 @@ Public Sub InitBoard()
 	ClearSheet
 	FormatBoard
 	WriteStatus
+	WriteTimer
 End Sub
 
 Private Sub ClearSheet()
@@ -104,6 +105,21 @@ Public Sub WriteStatus()
     Cells(BOARD_TOP - 2, BOARD_LEFT).Value = "상태: " & statusText 
 	Cells(BOARD_TOP - 2, BOARD_LEFT + 4).Value = "모드: " & modeText
     Cells(BOARD_TOP - 1, BOARD_LEFT).Value = "남은 지뢰 수: " & MinesLeft
+End Sub
+
+Public Sub WriteTimer()
+    Dim elapsed As Double
+    Dim timeText As String
+
+    elapsed = GetElapsedSeconds()
+
+    If GameStatus = GAME_WIN Or GameStatus = GAME_OVER Then
+        timeText = Format(elapsed, "0.000")
+    Else
+        timeText = CStr(Int(elapsed))
+    End If
+
+    Cells(BOARD_TOP - 1, BOARD_LEFT + BOARD_COLS - 2).Value = "시간: " & timeText
 End Sub
 
 Public Sub RenderCell(ByVal r As Long, ByVal c As Long, isFlag as Boolean)
