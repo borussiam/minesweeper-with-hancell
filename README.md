@@ -33,6 +33,8 @@ Anything is possible at the Ministry of National Defense...
 - First click is not a mine
   - Game starts and places mines after player's first click
 - Add (total mine count - flag count)
+- Show all mines at the end of a game(flags for a win, mines for a loss)
+  - Triggered mine is painted red, wrong flags are painted pink
 
 ## Current Module Structure
 - `modConfig`: Configuration values (e.g. board size and mine count)
@@ -44,7 +46,6 @@ Anything is possible at the Ministry of National Defense...
 ## Remaining Tasks
 - Add chording logic
   - Implement game over by chording with wrong flag
-- Show all mines at the end of a game
 - Add timer
 - Edit gameboard and buttons layout & design
   - Place images for mines and flags instead of "M" and "F"
@@ -53,3 +54,4 @@ Anything is possible at the Ministry of National Defense...
 - Change smiley face expressions according to game status
 - Add No Guess Mode
 - Add Hint
+- Add statistics(3BV, Efficiency, etc.)

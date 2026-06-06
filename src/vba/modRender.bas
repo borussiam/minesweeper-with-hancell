@@ -79,6 +79,9 @@ End Sub
 Public Sub WriteStatus()
 	Dim statusText As String
 	Dim modeText As String
+	Dim MinesLeft As Long
+
+	MinesLeft = MINE_TOTAL - FlaggedCount
 
 	Select Case GameStatus
 		Case GAME_READY
@@ -87,6 +90,7 @@ Public Sub WriteStatus()
 			statusText = "진행 중"
 		Case GAME_WIN
 			statusText = "승리!"
+			MinesLeft = 0
 		Case GAME_OVER
 			statusText = "게임 오버"
 	End Select
@@ -99,7 +103,7 @@ Public Sub WriteStatus()
 
     Cells(BOARD_TOP - 2, BOARD_LEFT).Value = "상태: " & statusText 
 	Cells(BOARD_TOP - 2, BOARD_LEFT + 4).Value = "모드: " & modeText
-    Cells(BOARD_TOP - 1, BOARD_LEFT).Value = "남은 지뢰 수: " & (MINE_TOTAL - FlaggedCount)
+    Cells(BOARD_TOP - 1, BOARD_LEFT).Value = "남은 지뢰 수: " & MinesLeft
 End Sub
 
 Public Sub RenderCell(ByVal r As Long, ByVal c As Long, isFlag as Boolean)
@@ -122,12 +126,35 @@ End Sub
 Public Sub RenderBoard()
 	Dim outArr() As Variant
 	Dim r as Long, c as Long
-
+	Dim curr As Range
+	
 	ReDim outArr(1 To BOARD_ROWS, 1 To BOARD_COLS)
 
 	For r = 1 To BOARD_ROWS
 		For c = 1 To BOARD_COLS
-			If Not Opened(r, c) Then
+			Set curr = GameSheet.Cells(r + BOARD_TOP - 1, c + BOARD_LEFT - 1)
+			If GameStatus = GAME_WIN Then
+				If Mine(r, c) Then
+					outArr(r, c) = FlagText
+				Else
+					outArr(r, c) = MineCount(r, c)
+				End If
+			ElseIf GameStatus = GAME_OVER Then
+				If Mine(r, c) Then
+					If Flagged(r, c) Then
+						outArr(r, c) = FlagText
+					Else
+						outArr(r, c) = MineText
+					End If
+				ElseIf Flagged(r, c) Then
+					outArr(r, c) = FlagText
+					curr.Interior.Color = RGB(255, 160, 160)
+				ElseIf Opened(r, c) Then
+					outArr(r, c) = MineCount(r, c)
+				Else
+					outArr(r, c) = CELL_CLOSED
+				End If
+			ElseIf Not Opened(r, c) Then
 				If Flagged(r, c) Then
 					outArr(r, c) = FlagText
 				Else

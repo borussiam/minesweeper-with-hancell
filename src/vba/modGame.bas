@@ -54,6 +54,7 @@ Public Sub OpenCell(ByVal r As Long, ByVal c As Long)
     If Mine(r, c) Then
         GameStatus = GAME_OVER
         RenderCell r, c, False
+        RenderBoard
         WriteStatus
         Exit Sub
     End If
@@ -62,6 +63,7 @@ Public Sub OpenCell(ByVal r As Long, ByVal c As Long)
     
     If OpenedCount = BOARD_ROWS * BOARD_COLS - MINE_TOTAL Then
         GameStatus = GAME_WIN
+        RenderBoard
         WriteStatus
     End If
 End Sub
