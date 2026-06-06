@@ -15,7 +15,12 @@ Public Const MODE_FLAG As Long = 2
 
 Public Const CELL_CLOSED As Long = -1
 
-Private Const PARK_CELL As String = "XFD1048576"
+Public Const GAME_READY As Long = 0
+Public Const GAME_ONGOING As Long = 1
+Public Const GAME_WIN As Long = 2
+Public Const GAME_OVER As Long = 3
+
+Public Const PARK_CELL As String = "XFD1048576"
 
 Public Function GameSheet() As Worksheet
     Set GameSheet = ThisWorkbook.Worksheets(SHEET_NAME)

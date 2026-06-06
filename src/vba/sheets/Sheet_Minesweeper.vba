@@ -12,7 +12,7 @@ Private Sub Worksheet_SelectionChange(ByVal Target As Range)
     Application.EnableEvents = False
     Application.ScreenUpdating = False
 
-    Me.Range("XFD1048576").Select
+    Me.Range(PARK_CELL).Select
 
     ActiveWindow.ScrollRow = sr
     ActiveWindow.ScrollColumn = sc

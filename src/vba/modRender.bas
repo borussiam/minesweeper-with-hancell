@@ -1,5 +1,5 @@
 Option Explicit
-'Option Private Module
+Option Private Module
 
 Public Sub InitBoard()
 	ClearSheet

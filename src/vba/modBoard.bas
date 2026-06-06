@@ -70,7 +70,7 @@ Public Function IsBoardCell(ByVal Target As Range) As Boolean
 		Application.EnableEvents = False
 		Application.ScreenUpdating = False
 
-		GameSheet.Range("XFD1048576").Select
+		GameSheet.Range(PARK_CELL).Select
 
 		ActiveWindow.ScrollRow = sr
     	ActiveWindow.ScrollColumn = sc
