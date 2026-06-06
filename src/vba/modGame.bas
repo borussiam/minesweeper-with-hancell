@@ -3,9 +3,15 @@ Option Explicit
 Public Sub NewGame()
     Application.ScreenUpdating = False
     InitState
-    InitMines
     InitBoard
     Application.ScreenUpdating = True
+End Sub
+
+Private Sub StartGame(ByVal firstR As Long, ByVal firstC As Long)
+    InitMines firstR, firstC
+    GameStatus = GAME_ONGOING
+    GameStartTime = Now
+    WriteStatus
 End Sub
 
 Public Sub SetOpenMode()
@@ -22,10 +28,14 @@ Public Function HandleCellSelect(ByVal Target As Range) As Boolean
     Dim r As Long
     Dim c As Long
 
-    If Not GameRunning Then Exit Function
+    If GameStatus = GAME_WIN Or GameStatus = GAME_OVER Then Exit Function
     If Not IsBoardCell(Target) Then Exit Function
 
     CellToBoardPos Target, r, c
+
+    If GameStatus = GAME_READY Then
+        StartGame r, c
+    End If
 
     If CurrentMode = MODE_FLAG Then
         ToggleFlag r, c
@@ -37,22 +47,22 @@ Public Function HandleCellSelect(ByVal Target As Range) As Boolean
 End Function
 
 Public Sub OpenCell(ByVal r As Long, ByVal c As Long)
-    If Not GameRunning Then Exit Sub
+    If GameStatus = GAME_WIN Or GameStatus = GAME_OVER Then Exit Sub
     If Opened(r, c) Then Exit Sub
     If Flagged(r, c) Then Exit Sub
 
     If Mine(r, c) Then
-        GameRunning = False
+        GameStatus = GAME_OVER
         RenderCell r, c, False
-        Cells(BOARD_TOP - 1, BOARD_LEFT).Value = "상태: 게임 오버"
+        WriteStatus
         Exit Sub
     End If
 
     RevealArea r, c
     
     If OpenedCount = BOARD_ROWS * BOARD_COLS - MINE_TOTAL Then
-        GameRunning = False
-        Cells(BOARD_TOP - 1, BOARD_LEFT).Value = "상태: 승리!"
+        GameStatus = GAME_WIN
+        WriteStatus
     End If
 End Sub
 
@@ -119,10 +129,17 @@ Private Sub RevealArea(ByVal startR As Long, ByVal startC As Long)
 End Sub
 
 Public Sub ToggleFlag(ByVal r As Long, ByVal c As Long)
-    If Not GameRunning Then Exit Sub
+    If GameStatus = GAME_WIN Or GameStatus = GAME_OVER Then Exit Sub
     If Opened(r, c) Then Exit Sub
 
     Flagged(r, c) = Not Flagged(r, c)
+
+    If Flagged(r, c) Then
+        FlaggedCount = FlaggedCount + 1
+    Else
+        FlaggedCount = FlaggedCount - 1
+    End If
+    WriteStatus
 
     RenderCell r, c, True
 End Sub

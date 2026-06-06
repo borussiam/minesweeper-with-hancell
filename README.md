@@ -29,6 +29,10 @@ Anything is possible at the Ministry of National Defense...
 - Add cell reveal logic for "openings"
 - Add colors to mine count numbers(1: blue, 2: green, ...)
 - Show unicode flag and mine instead of "F" and "M"
+- Complete game status logic(ready, ongoing, win, game over)
+- First click is not a mine
+  - Game starts and places mines after player's first click
+- Add (total mine count - flag count)
 
 ## Current Module Structure
 - `modConfig`: Configuration values (e.g. board size and mine count)
@@ -39,11 +43,8 @@ Anything is possible at the Ministry of National Defense...
 
 ## Remaining Tasks
 - Add chording logic
-  - Implement game over by incorrect chording
-- Complete game status logic(ready, ongoing, win, game over)
-- First click should not be a mine
+  - Implement game over by chording with wrong flag
 - Show all mines at the end of a game
-- Add (total mine count - flag count)
 - Add timer
 - Edit gameboard and buttons layout & design
   - Place images for mines and flags instead of "M" and "F"

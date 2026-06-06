@@ -1,19 +1,19 @@
 Option Explicit
 Option Private Module
 
-Public Sub InitMines()
+Public Sub InitMines(ByVal firstR As Long, ByVal firstC As Long)
 	Randomize
-	PlaceMines
+	PlaceMines firstR, firstC
 	CountMines
 End Sub
 
-Private Sub PlaceMines()
+Private Sub PlaceMines(ByVal firstR As Long, ByVal firstC As Long)
 	Dim placed As Long
 	Dim r As Long
 	Dim c As Long
 	
-	If MINE_TOTAL > BOARD_ROWS * BOARD_COLS Then
-		MsgBox "지뢰 수가 전체 칸 수보다 많습니다."
+	If MINE_TOTAL > BOARD_ROWS * BOARD_COLS - 1 Then
+		MsgBox "지뢰 수가 너무 많습니다."
 		Exit Sub
 	End If
 	
@@ -23,7 +23,8 @@ Private Sub PlaceMines()
 		r = Int(Rnd() * BOARD_ROWS) + 1
 		c = Int(Rnd() * BOARD_COLS) + 1
 		
-		If Not Mine(r, c) Then
+		If CurrentMode = MODE_OPEN And r = firstR And c = firstC Then
+		ElseIf Not Mine(r, c) Then
 			Mine(r, c) = True
 			placed = placed + 1
 		End If

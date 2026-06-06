@@ -77,7 +77,19 @@ Private Sub ApplyCondFormatting(ByVal br As Range)
 End Sub
 
 Public Sub WriteStatus()
+	Dim statusText As String
 	Dim modeText As String
+
+	Select Case GameStatus
+		Case GAME_READY
+			statusText = "준비"
+		Case GAME_ONGOING
+			statusText = "진행 중"
+		Case GAME_WIN
+			statusText = "승리!"
+		Case GAME_OVER
+			statusText = "게임 오버"
+	End Select
 
     If CurrentMode = MODE_FLAG Then
         modeText = "깃발"
@@ -85,22 +97,25 @@ Public Sub WriteStatus()
         modeText = "열기"
     End If
 
-    Cells(BOARD_TOP - 1, BOARD_LEFT).Value = "상태: 진행 중 / 모드: " & modeText
-    Cells(BOARD_TOP - 1, BOARD_LEFT + BOARD_COLS - 1).Value = "지뢰 수: " & MINE_TOTAL
+    Cells(BOARD_TOP - 2, BOARD_LEFT).Value = "상태: " & statusText 
+	Cells(BOARD_TOP - 2, BOARD_LEFT + 4).Value = "모드: " & modeText
+    Cells(BOARD_TOP - 1, BOARD_LEFT).Value = "남은 지뢰 수: " & (MINE_TOTAL - FlaggedCount)
 End Sub
 
 Public Sub RenderCell(ByVal r As Long, ByVal c As Long, isFlag as Boolean)
+	Dim curr As Range
+	Set curr = GameSheet.Cells(r + BOARD_TOP - 1, c + BOARD_LEFT - 1)
 	If isFlag Then
 		If Flagged(r, c) Then
-			Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Value = FlagText
+			curr.Value = FlagText
 		Else
-			Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Value = CELL_CLOSED
+			curr.Value = CELL_CLOSED
 		End If
 	ElseIf Mine(r, c) Then
-		Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Value = MineText
-		Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Interior.Color = RGB(255, 0, 0)
+		curr.Value = MineText
+		curr.Interior.Color = RGB(255, 0, 0)
 	ElseIf MineCount(r, c) > 0 Then
-		Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Value = MineCount(r, c)
+		curr.Value = MineCount(r, c)
 	End If
 End Sub
 
