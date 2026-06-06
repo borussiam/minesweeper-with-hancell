@@ -1,9 +1,11 @@
 Option Explicit
 
 Public Sub NewGame()
+    Application.ScreenUpdating = False
     InitState
     InitMines
     InitBoard
+    Application.ScreenUpdating = True
 End Sub
 
 Public Sub SetOpenMode()
@@ -39,8 +41,6 @@ Public Sub OpenCell(ByVal r As Long, ByVal c As Long)
     If Opened(r, c) Then Exit Sub
     If Flagged(r, c) Then Exit Sub
 
-    Opened(r, c) = True
-
     If Mine(r, c) Then
         GameRunning = False
         RenderCell r, c, False
@@ -48,13 +48,74 @@ Public Sub OpenCell(ByVal r As Long, ByVal c As Long)
         Exit Sub
     End If
 
-    RenderCell r, c, False
+    RevealArea r, c
     
-    OpenedCount = OpenedCount + 1
     If OpenedCount = BOARD_ROWS * BOARD_COLS - MINE_TOTAL Then
         GameRunning = False
         Cells(BOARD_TOP - 1, BOARD_LEFT).Value = "상태: 승리!"
     End If
+End Sub
+
+Private Sub RevealArea(ByVal startR As Long, ByVal startC As Long)
+    Dim qR() As Long
+    Dim qC() As Long
+    Dim s As Long
+    Dim e As Long
+    Dim maxCells As Long
+
+    Dim r As Long, c As Long
+    Dim nr As Long, nc As Long
+    Dim dr As Long, dc As Long
+
+    If Opened(startR, startC) Then Exit Sub
+    If Flagged(startR, startC) Then Exit Sub
+    If Mine(startR, startC) Then Exit Sub
+
+    Opened(startR, startC) = True
+    OpenedCount = OpenedCount + 1
+
+    If MineCount(startR, startC) <> 0 Then
+        RenderCell startR, startC, False
+        Exit Sub
+    End If
+
+    maxCells = BOARD_ROWS * BOARD_COLS
+    ReDim qR(1 To maxCells)
+    ReDim qC(1 To maxCells)
+    s = 1
+    e = 1
+
+    qR(e) = startR
+    qC(e) = startC
+
+    Do While s <= e
+        r = qR(s)
+        c = qC(s)
+        s = s + 1
+
+        For dr = -1 To 1
+            For dc = -1 To 1
+                If Not (dr = 0 And dc = 0) Then
+                    nr = r + dr
+                    nc = c + dc
+
+                    If IsBoardCell(Range(Cells(nr + BOARD_TOP - 1, nc + BOARD_LEFT - 1))) Then
+                        If Not Opened(nr, nc) Then
+                            Opened(nr, nc) = True
+                            OpenedCount = OpenedCount + 1
+
+                            If MineCount(nr, nc) = 0 Then
+                                e = e + 1
+                                qR(e) = nr
+                                qC(e) = nc
+                            End If
+                        End If
+                    End If
+                End If
+            Next dc
+        Next dr
+    Loop
+    RenderBoard
 End Sub
 
 Public Sub ToggleFlag(ByVal r As Long, ByVal c As Long)

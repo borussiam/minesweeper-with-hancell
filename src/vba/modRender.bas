@@ -12,19 +12,68 @@ Private Sub ClearSheet()
         .ClearContents
         .ClearFormats
     End With
-
-    Columns.ColumnWidth = 2.78
-    Rows.RowHeight = 24
 End Sub
 
 Private Sub FormatBoard()
-	With Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS)
+    Columns.ColumnWidth = 2.78
+    Rows.RowHeight = 24
+
+	Dim br As Range
+	Set br = Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS)
+
+	With br
+		.NumberFormat = "0;;;@"
+		.Value = CELL_CLOSED
         .Interior.Color = RGB(230, 230, 230)
         .HorizontalAlignment = xlCenter
         .VerticalAlignment = xlCenter
         .Borders.LineStyle = xlContinuous
+        .Font.Name = "Segoe UI Emoji"
         .Font.Bold = True
+		.FormatConditions.Delete
     End With
+
+	ApplyCondFormatting br
+End Sub
+
+Private Sub ApplyCondFormatting(ByVal br As Range)
+    Dim n As Long
+    Dim fc As FormatCondition
+
+    Set fc = br.FormatConditions.Add( _
+        Type:=xlCellValue, _
+        Operator:=xlBetween, _
+        Formula1:="=0", _
+        Formula2:="=8" _
+    )
+    fc.Interior.Color = RGB(198, 198, 198)
+
+    For n = 1 To 8
+        Set fc = br.FormatConditions.Add( _
+            Type:=xlCellValue, _
+            Operator:=xlEqual, _
+            Formula1:="=" & n _
+        )
+
+        Select Case n
+            Case 1
+                fc.Font.Color = RGB(0, 0, 247)
+            Case 2
+                fc.Font.Color = RGB(0, 119, 0)
+            Case 3
+                fc.Font.Color = RGB(236, 0, 0)
+            Case 4
+                fc.Font.Color = RGB(0, 0, 128)
+            Case 5
+                fc.Font.Color = RGB(128, 0, 0)
+            Case 6
+                fc.Font.Color = RGB(0, 128, 128)
+            Case 7
+                fc.Font.Color = RGB(0, 0, 0)
+            Case 8
+                fc.Font.Color = RGB(112, 112, 112)
+        End Select
+    Next n
 End Sub
 
 Public Sub WriteStatus()
@@ -43,36 +92,39 @@ End Sub
 Public Sub RenderCell(ByVal r As Long, ByVal c As Long, isFlag as Boolean)
 	If isFlag Then
 		If Flagged(r, c) Then
-			Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Value = "F"
-			Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Interior.Color = RGB(238, 201, 201)
+			Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Value = FlagText
 		Else
-			Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Value = ""
-			Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Interior.Color = RGB(230, 230, 230)
+			Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Value = CELL_CLOSED
 		End If
 	ElseIf Mine(r, c) Then
-		Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Value = "M"
+		Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Value = MineText
 		Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Interior.Color = RGB(255, 0, 0)
 	ElseIf MineCount(r, c) > 0 Then
 		Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Value = MineCount(r, c)
-		Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Interior.Color = RGB(170, 170, 170)
-	ElseIf MineCount(r, c) = 0 Then
-		Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Interior.Color = RGB(170, 170, 170)
 	End If
 End Sub
 
-' Debugger
 Public Sub RenderBoard()
-	NewGame
-	Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS*2, BOARD_COLS*2).Value = ""
+	Dim outArr() As Variant
 	Dim r as Long, c as Long
+
+	ReDim outArr(1 To BOARD_ROWS, 1 To BOARD_COLS)
+
 	For r = 1 To BOARD_ROWS
 		For c = 1 To BOARD_COLS
-			If Mine(r, c) Then
-				Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Value = "M"
-			ElseIf MineCount(r, c) > 0 Then
-				Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Value = MineCount(r, c)
+			If Not Opened(r, c) Then
+				If Flagged(r, c) Then
+					outArr(r, c) = FlagText
+				Else
+					outArr(r, c) = CELL_CLOSED
+				End If
+			ElseIf Mine(r, c) Then
+				outArr(r, c) = MineText
+			Else
+				outArr(r, c) = MineCount(r, c)
 			End If
-			Cells(BOARD_TOP+r-1, BOARD_LEFT+c-1).Interior.Color = RGB(170, 170, 170)
 		Next c
 	Next r
+
+    Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS).Value2 = outArr
 End Sub

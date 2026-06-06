@@ -25,6 +25,11 @@ Anything is possible at the Ministry of National Defense...
 **Truly playable from here!** (but still extremely unfriendly)
 - Disable range selection to prevent confusion
 
+### 2026-06-06
+- Add cell reveal logic for "openings"
+- Add colors to mine count numbers(1: blue, 2: green, ...)
+- Show unicode flag and mine instead of "F" and "M"
+
 ## Current Module Structure
 - `modConfig`: Configuration values (e.g. board size and mine count)
 - `modState`: Game state array management
@@ -33,9 +38,11 @@ Anything is possible at the Ministry of National Defense...
 - `modRender`: Cell rendering
 
 ## Remaining Tasks
-- Add cell reveal logic for "openings"
+- Add chording logic
+  - Implement game over by incorrect chording
 - Complete game status logic(ready, ongoing, win, game over)
 - First click should not be a mine
+- Show all mines at the end of a game
 - Add (total mine count - flag count)
 - Add timer
 - Edit gameboard and buttons layout & design

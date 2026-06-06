@@ -13,8 +13,18 @@ Public Const BOARD_LEFT As Long = 2
 Public Const MODE_OPEN As Long = 1
 Public Const MODE_FLAG As Long = 2
 
+Public Const CELL_CLOSED As Long = -1
+
 Private Const PARK_CELL As String = "XFD1048576"
 
 Public Function GameSheet() As Worksheet
     Set GameSheet = ThisWorkbook.Worksheets(SHEET_NAME)
+End Function
+
+Public Function FlagText() As String
+    FlagText = ChrW$(&HD83D) & ChrW$(&HDEA9)   ' 🚩
+End Function
+
+Public Function MineText() As String
+    MineText = ChrW(&HD83D) & ChrW(&HDCA3)   ' 💣
 End Function
