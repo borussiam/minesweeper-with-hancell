@@ -35,29 +35,51 @@ Private Sub CountMines()
 	Dim r As Long, c As Long
 	Dim dr As Long, dc As Long
 	Dim nr As Long, nc As Long
-	Dim num As Long
+	Dim cnt As Long
+
 	For r = 1 To BOARD_ROWS
 		For c = 1 To BOARD_COLS
-			num = 0
+			cnt = 0
 			If Not Mine(r, c) Then
 				For dr = -1 To 1
 					For dc = -1 To 1
-						nr = r + dr
-						nc = c + dc
-						If Not (dr = 0 And dc = 0) _
-						   And 1 <= nr And nr <= BOARD_ROWS _
-						   And 1 <= nc And nc <= BOARD_COLS Then
-							If Mine(nr, nc) Then
-								num = num + 1
+						If Not (dr = 0 And dc = 0) Then
+							nr = r + dr
+							nc = c + dc
+							If IsInsideBoard(nr, nc) Then
+								If Mine(nr, nc) Then
+									cnt = cnt + 1
+								End If
 							End If
 						End If
 					Next dc
 				Next dr
 			End If
-			MineCount(r, c) = num
+			MineCount(r, c) = cnt
 		Next c
 	Next r
 End Sub
+
+Public Function CountFlags(ByVal r As Long, ByVal c As Long) As Long
+    Dim dr As Long, dc As Long
+    Dim nr As Long, nc As Long
+    Dim cnt As Long
+
+    For dr = -1 To 1
+        For dc = -1 To 1
+            If Not (dr = 0 And dc = 0) Then
+                nr = r + dr
+                nc = c + dc
+                If IsInsideBoard(nr, nc) Then
+                    If Flagged(nr, nc) Then
+                        cnt = cnt + 1
+                    End If
+                End If
+            End If
+        Next dc
+    Next dr
+    CountFlags = cnt
+End Function
 
 Public Function IsBoardCell(ByVal Target As Range) As Boolean
     Dim boardRange As Range
@@ -87,6 +109,12 @@ Public Function IsBoardCell(ByVal Target As Range) As Boolean
     Set boardRange = Target.Worksheet.Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS)
 
     IsBoardCell = Not Intersect(Target, boardRange) Is Nothing
+End Function
+
+Public Function IsInsideBoard(ByVal r As Long, ByVal c As Long) As Boolean
+    IsInsideBoard = _
+        (r >= 1 And r <= BOARD_ROWS And _
+         c >= 1 And c <= BOARD_COLS)
 End Function
 
 Public Sub CellToBoardPos(ByVal Target As Range, ByRef r As Long, ByRef c As Long)

@@ -54,7 +54,9 @@ Public Function HandleCellSelect(ByVal Target As Range) As Boolean
         StartGame r, c
     End If
 
-    If CurrentMode = MODE_FLAG Then
+    If Opened(r, c) Then
+        ChordCell r, c
+    ElseIf CurrentMode = MODE_FLAG Then
         ToggleFlag r, c
     Else
         OpenCell r, c
@@ -64,36 +66,42 @@ Public Function HandleCellSelect(ByVal Target As Range) As Boolean
 End Function
 
 Public Sub OpenCell(ByVal r As Long, ByVal c As Long)
-    If GameStatus = GAME_WIN Or GameStatus = GAME_OVER Then Exit Sub
-    If Opened(r, c) Then Exit Sub
-    If Flagged(r, c) Then Exit Sub
+    RevealCell r, c
+    FinishTurn
+End Sub
 
-    If Mine(r, c) Then
-        GameEndTick = Timer
-        GameStatus = GAME_OVER
-        StopTimer
-        RenderFace
-        RenderCell r, c, False
-        RenderBoard
-        WriteStatus
-        WriteTimer
+Public Sub ChordCell(ByVal r As Long, ByVal c As Long)
+    Dim dr As Long, dc As Long
+    Dim nr As Long, nc As Long
+
+    If GameStatus <> GAME_ONGOING Then Exit Sub
+    If Not Opened(r, c) Then Exit Sub
+    If MineCount(r, c) <= 0 Then Exit Sub
+
+    If CountFlags(r, c) <> MineCount(r, c) Then
         Exit Sub
     End If
 
-    RevealArea r, c
-    
-    If OpenedCount = BOARD_ROWS * BOARD_COLS - MINE_TOTAL Then
-        GameEndTick = Timer
-        GameStatus = GAME_WIN
-        StopTimer
-        RenderFace
-        RenderBoard
-        WriteStatus
-        WriteTimer
-    End If
+    For dr = -1 To 1
+        For dc = -1 To 1
+            If Not (dr = 0 And dc = 0) Then
+                nr = r + dr
+                nc = c + dc
+                If IsInsideBoard(nr, nc) Then
+                    If Not Opened(nr, nc) Then
+                        If Not Flagged(nr, nc) Then
+                            RevealCell nr, nc
+                        End If
+                    End If
+                End If
+            End If
+        Next dc
+    Next dr
+
+    FinishTurn
 End Sub
 
-Private Sub RevealArea(ByVal startR As Long, ByVal startC As Long)
+Private Sub RevealCell(ByVal startR As Long, ByVal startC As Long)
     Dim qR() As Long
     Dim qC() As Long
     Dim s As Long
@@ -106,13 +114,18 @@ Private Sub RevealArea(ByVal startR As Long, ByVal startC As Long)
 
     If Opened(startR, startC) Then Exit Sub
     If Flagged(startR, startC) Then Exit Sub
-    If Mine(startR, startC) Then Exit Sub
+    If Mine(startR, startC) Then
+        Opened(startR, startC) = True
+        If HitMineRow = 0 And HitMineCol = 0 Then
+            HitMineRow = startR
+            HitMineCol = startC
+        End If
+        Exit Sub
+    End If
 
-    Opened(startR, startC) = True
-    OpenedCount = OpenedCount + 1
+    MarkOpened startR, startC
 
     If MineCount(startR, startC) <> 0 Then
-        RenderCell startR, startC, False
         Exit Sub
     End If
 
@@ -135,11 +148,9 @@ Private Sub RevealArea(ByVal startR As Long, ByVal startC As Long)
                 If Not (dr = 0 And dc = 0) Then
                     nr = r + dr
                     nc = c + dc
-
-                    If IsBoardCell(Range(Cells(nr + BOARD_TOP - 1, nc + BOARD_LEFT - 1))) Then
+                    If IsInsideBoard(nr, nc) Then
                         If Not Opened(nr, nc) Then
-                            Opened(nr, nc) = True
-                            OpenedCount = OpenedCount + 1
+                            MarkOpened nr, nc
 
                             If MineCount(nr, nc) = 0 Then
                                 e = e + 1
@@ -152,7 +163,35 @@ Private Sub RevealArea(ByVal startR As Long, ByVal startC As Long)
             Next dc
         Next dr
     Loop
+End Sub
+
+Private Sub FinishTurn()
+    If HitMineRow > 0 And HitMineCol > 0 Then
+        GameEndTick = Timer
+        GameStatus = GAME_OVER
+        StopTimer
+        RenderCell HitMineRow, HitMineCol, False
+    ElseIf OpenedCount = BOARD_ROWS * BOARD_COLS - MINE_TOTAL Then
+        GameEndTick = Timer
+        GameStatus = GAME_WIN
+        StopTimer
+    End If
+    RenderFace
     RenderBoard
+    WriteStatus
+    WriteTimer
+End Sub
+
+Private Sub MarkOpened(ByVal r As Long, ByVal c As Long)
+    If Opened(r, c) Then Exit Sub
+
+    If Flagged(r, c) Then
+        Flagged(r, c) = False
+        FlaggedCount = FlaggedCount - 1
+    End If
+
+    Opened(r, c) = True
+    OpenedCount = OpenedCount + 1
 End Sub
 
 Public Sub ToggleFlag(ByVal r As Long, ByVal c As Long)

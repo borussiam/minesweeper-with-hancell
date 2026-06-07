@@ -42,6 +42,11 @@ Anything is possible at the Ministry of National Defense...
 - Restyle game start button(smiley face)
 - Change smiley face expressions according to game status
 - Round the elapsed time for better experience
+- Add chording logic
+  - Implement game over by chording with wrong flag
+- Fix issue: flagged cells not (internally) unflagging when opened by "opening" expansion
+
+**Fully functioning game from here**
 
 ## Current Module Structure
 - `modConfig`: Configuration values (e.g. board size and mine count)
@@ -52,11 +57,12 @@ Anything is possible at the Ministry of National Defense...
 - `modTimer` : Timer control
 
 ## Remaining Tasks
-- Add chording logic
-  - Implement game over by chording with wrong flag
+### Soon
 - Edit gameboard and buttons layout & design
-  - Place images for mines, flags, and everyting else
-- Add difficulty choices(beginner, intermediate, expert) and custom board sizes
-- Add No Guess Mode
-- Add Hint
+  - Place images for mines, flags, board, and everyting else
+- Add difficulty choices(beginner, intermediate, expert) and custom boards
+### Later, if not never (in likely-to-be-done order)
+- Add Ranking
 - Add statistics(3BV, Efficiency, etc.)
+- Add Hint
+- Add No Guess Mode
