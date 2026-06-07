@@ -117,7 +117,7 @@ Public Sub WriteTimer()
     If GameStatus = GAME_WIN Or GameStatus = GAME_OVER Then
         timeText = Format(elapsed, "0.000")
     Else
-        timeText = CStr(Int(elapsed))
+        timeText = CStr(Int(elapsed + 0.5))
     End If
 
     Cells(BOARD_TOP - 1, BOARD_LEFT + BOARD_COLS - 2).Value = "시간: " & timeText

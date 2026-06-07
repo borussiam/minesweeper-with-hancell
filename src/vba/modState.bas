@@ -11,7 +11,7 @@ Public OpenedCount As Long
 Public FlaggedCount As Long
 Public CurrentMode As Long
 
-Public GameStartTime As Date
+Public NextTimerSecond As Long
 Public NextTimerTime As Date
 Public TimerScheduled As Boolean
 
@@ -31,7 +31,7 @@ Public Sub InitState()
     OpenedCount = 0
     FlaggedCount = 0
 
-    GameStartTime = 0
+    NextTimerSecond = 0
     NextTimerTime = 0
     TimerScheduled = False
 

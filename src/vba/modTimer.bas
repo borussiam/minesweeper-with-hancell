@@ -3,8 +3,9 @@ Option Explicit
 Public Sub StartTimer()
     StopTimer
 
-    GameStartTime = Now
     GameStartTick = Timer
+    GameEndTick = 0
+    NextTimerSecond = 1
 
     WriteTimer
     ScheduleNextTimerTick
@@ -33,6 +34,7 @@ Public Sub TimerTick()
     If GameStatus <> GAME_ONGOING Then Exit Sub
 
     WriteTimer
+    NextTimerSecond = NextTimerSecond + 1
     ScheduleNextTimerTick
 End Sub
 

@@ -41,6 +41,7 @@ Anything is possible at the Ministry of National Defense...
 ### 2026-06-07
 - Restyle game start button(smiley face)
 - Change smiley face expressions according to game status
+- Round the elapsed time for better experience
 
 ## Current Module Structure
 - `modConfig`: Configuration values (e.g. board size and mine count)
@@ -54,8 +55,7 @@ Anything is possible at the Ministry of National Defense...
 - Add chording logic
   - Implement game over by chording with wrong flag
 - Edit gameboard and buttons layout & design
-  - Place images for mines and flags instead of "M" and "F"
-  - Color numbers and use 8-bit font if possible
+  - Place images for mines, flags, and everyting else
 - Add difficulty choices(beginner, intermediate, expert) and custom board sizes
 - Add No Guess Mode
 - Add Hint
