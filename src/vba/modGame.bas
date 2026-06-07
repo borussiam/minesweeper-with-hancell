@@ -1,16 +1,31 @@
 Option Explicit
 
 Public Sub NewGame()
+    If IsResetting Then Exit Sub
+
+    On Error GoTo CleanUp
+
+    IsResetting = True
     StopTimer
+    RenderFacePressed
+    WaitSeconds 0.2
     Application.ScreenUpdating = False
     InitState
     InitBoard
+
+CleanUp:
     Application.ScreenUpdating = True
+    IsResetting = False
+
+    If Err.Number <> 0 Then
+        MsgBox "새 게임을 시작하는 중 오류가 발생했습니다." & vbCrLf & Err.Description
+    End If
 End Sub
 
 Private Sub StartGame(ByVal firstR As Long, ByVal firstC As Long)
     InitMines firstR, firstC
     GameStatus = GAME_ONGOING
+    RenderFace
     StartTimer
     WriteStatus
 End Sub
@@ -29,6 +44,7 @@ Public Function HandleCellSelect(ByVal Target As Range) As Boolean
     Dim r As Long
     Dim c As Long
 
+    If IsResetting Then Exit Function
     If GameStatus = GAME_WIN Or GameStatus = GAME_OVER Then Exit Function
     If Not IsBoardCell(Target) Then Exit Function
 
@@ -56,6 +72,7 @@ Public Sub OpenCell(ByVal r As Long, ByVal c As Long)
         GameEndTick = Timer
         GameStatus = GAME_OVER
         StopTimer
+        RenderFace
         RenderCell r, c, False
         RenderBoard
         WriteStatus
@@ -69,6 +86,7 @@ Public Sub OpenCell(ByVal r As Long, ByVal c As Long)
         GameEndTick = Timer
         GameStatus = GAME_WIN
         StopTimer
+        RenderFace
         RenderBoard
         WriteStatus
         WriteTimer
@@ -151,4 +169,21 @@ Public Sub ToggleFlag(ByVal r As Long, ByVal c As Long)
     WriteStatus
 
     RenderCell r, c, True
+End Sub
+
+Private Sub WaitSeconds(ByVal seconds As Double)
+    Dim startTick As Double
+    Dim elapsed As Double
+
+    startTick = Timer
+
+    Do
+        elapsed = Timer - startTick
+
+        If elapsed < 0 Then
+            elapsed = elapsed + 86400
+        End If
+
+        DoEvents
+    Loop While elapsed < seconds
 End Sub

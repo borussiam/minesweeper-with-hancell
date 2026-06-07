@@ -6,6 +6,7 @@ Public Sub InitBoard()
 	FormatBoard
 	WriteStatus
 	WriteTimer
+	RenderFace
 End Sub
 
 Private Sub ClearSheet()
@@ -103,7 +104,7 @@ Public Sub WriteStatus()
     End If
 
     Cells(BOARD_TOP - 2, BOARD_LEFT).Value = "상태: " & statusText 
-	Cells(BOARD_TOP - 2, BOARD_LEFT + 4).Value = "모드: " & modeText
+	Cells(BOARD_TOP - 2, BOARD_LEFT + BOARD_COLS - 2).Value = "모드: " & modeText
     Cells(BOARD_TOP - 1, BOARD_LEFT).Value = "남은 지뢰 수: " & MinesLeft
 End Sub
 
@@ -185,4 +186,63 @@ Public Sub RenderBoard()
 	Next r
 
     Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS).Value2 = outArr
+End Sub
+
+Public Sub RenderFace()
+    Select Case GameStatus
+        Case GAME_WIN
+            ShowFace FACE_WIN
+
+        Case GAME_OVER
+            ShowFace FACE_LOSE
+
+        Case Else
+            ShowFace FACE_UNPRESSED
+    End Select
+End Sub
+
+Public Sub RenderFacePressed()
+    ShowFace FACE_PRESSED
+    DoEvents
+End Sub
+
+Private Sub ShowFace(ByVal visibleName As String)
+    SetupFaceShape FACE_UNPRESSED, visibleName
+    SetupFaceShape FACE_PRESSED, visibleName
+    SetupFaceShape FACE_WIN, visibleName
+    SetupFaceShape FACE_LOSE, visibleName
+End Sub
+
+Private Sub SetupFaceShape(ByVal shpName As String, ByVal visibleName As String)
+    Dim shp As Shape
+    Dim br As Range
+    Dim leftPos As Double
+    Dim topPos As Double
+
+    On Error Resume Next
+    Set shp = GameSheet.Shapes(shpName)
+    On Error GoTo 0
+
+    If shp Is Nothing Then Exit Sub
+
+    Set br = GameSheet.Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS)
+
+    leftPos = br.Left + (br.Width - FACE_SIZE) / 2
+    topPos = GameSheet.Cells(BOARD_TOP - 2, BOARD_LEFT).Top + 1
+
+    With shp
+        .Left = leftPos
+        .Top = topPos
+        .Width = FACE_SIZE
+        .Height = FACE_SIZE
+        .Placement = xlMoveAndSize
+        .OnAction = "NewGame"
+
+        If shpName = visibleName Then
+            .Visible = msoTrue
+            .ZOrder msoBringToFront
+        Else
+            .Visible = msoFalse
+        End If
+    End With
 End Sub

@@ -18,6 +18,8 @@ Public TimerScheduled As Boolean
 Public GameStartTick As Double
 Public GameEndTick As Double
 
+Public IsResetting As Boolean
+
 Public Sub InitState()
     ReDim Mine(1 To BOARD_ROWS, 1 To BOARD_COLS)
     ReDim Opened(1 To BOARD_ROWS, 1 To BOARD_COLS)

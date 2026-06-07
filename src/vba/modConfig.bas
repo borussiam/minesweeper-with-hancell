@@ -22,6 +22,13 @@ Public Const GAME_OVER As Long = 3
 
 Public Const PARK_CELL As String = "XFD1048576"
 
+Public Const FACE_UNPRESSED As String = "face_unpressed"
+Public Const FACE_PRESSED As String = "face_pressed"
+Public Const FACE_WIN As String = "face_win"
+Public Const FACE_LOSE As String = "face_lose"
+
+Public Const FACE_SIZE As Double = 40
+
 Public Function GameSheet() As Worksheet
     Set GameSheet = ThisWorkbook.Worksheets(SHEET_NAME)
 End Function

@@ -38,6 +38,10 @@ Anything is possible at the Ministry of National Defense...
 - Add timer
   - Down to seconds while playing, down to thousandths after the game
 
+### 2026-06-07
+- Restyle game start button(smiley face)
+- Change smiley face expressions according to game status
+
 ## Current Module Structure
 - `modConfig`: Configuration values (e.g. board size and mine count)
 - `modState`: Game state array management
@@ -53,7 +57,6 @@ Anything is possible at the Ministry of National Defense...
   - Place images for mines and flags instead of "M" and "F"
   - Color numbers and use 8-bit font if possible
 - Add difficulty choices(beginner, intermediate, expert) and custom board sizes
-- Change smiley face expressions according to game status
 - Add No Guess Mode
 - Add Hint
 - Add statistics(3BV, Efficiency, etc.)
