@@ -3,9 +3,9 @@ Option Private Module
 
 Public Const SHEET_NAME As String = "Sheet1"
 
-Public Const BOARD_ROWS As Long = 10
-Public Const BOARD_COLS As Long = 10
-Public Const MINE_TOTAL As Long = 10
+Public Const BOARD_ROWS As Long = 16
+Public Const BOARD_COLS As Long = 30
+Public Const MINE_TOTAL As Long = 99
 
 Public Const BOARD_TOP As Long = 3
 Public Const BOARD_LEFT As Long = 2
@@ -20,7 +20,7 @@ Public Const GAME_ONGOING As Long = 1
 Public Const GAME_WIN As Long = 2
 Public Const GAME_OVER As Long = 3
 
-Public Const PARK_CELL As String = "XFD1048576"
+Public Const PARK_CELL As String = "EA105"
 
 Public Const FACE_UNPRESSED As String = "face_unpressed"
 Public Const FACE_PRESSED As String = "face_pressed"

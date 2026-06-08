@@ -48,6 +48,11 @@ Anything is possible at the Ministry of National Defense...
 
 **Fully functioning game from here**
 
+### 2026-06-08
+- Resize the board to Expert(30x16/99)
+- Optimize rendering for larger boards
+  - Reduce unneccesary access, redundant rendering to various things
+
 ## Current Module Structure
 - `modConfig`: Configuration values (e.g. board size and mine count)
 - `modState`: Game state array management

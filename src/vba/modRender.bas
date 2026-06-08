@@ -6,6 +6,7 @@ Public Sub InitBoard()
 	FormatBoard
 	WriteStatus
 	WriteTimer
+    InitFaceLayout
 	RenderFace
 End Sub
 
@@ -143,13 +144,10 @@ End Sub
 Public Sub RenderBoard()
 	Dim outArr() As Variant
 	Dim r as Long, c as Long
-	Dim curr As Range
-	
 	ReDim outArr(1 To BOARD_ROWS, 1 To BOARD_COLS)
 
 	For r = 1 To BOARD_ROWS
 		For c = 1 To BOARD_COLS
-			Set curr = GameSheet.Cells(r + BOARD_TOP - 1, c + BOARD_LEFT - 1)
 			If GameStatus = GAME_WIN Then
 				If Mine(r, c) Then
 					outArr(r, c) = FlagText
@@ -165,7 +163,7 @@ Public Sub RenderBoard()
 					End If
 				ElseIf Flagged(r, c) Then
 					outArr(r, c) = FlagText
-					curr.Interior.Color = RGB(255, 160, 160)
+					GameSheet.Cells(r + BOARD_TOP - 1, c + BOARD_LEFT - 1).Interior.Color = RGB(255, 160, 160)
 				ElseIf Opened(r, c) Then
 					outArr(r, c) = MineCount(r, c)
 				Else
@@ -188,6 +186,46 @@ Public Sub RenderBoard()
     Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS).Value2 = outArr
 End Sub
 
+Private Sub InitFaceLayout()
+    Dim br As Range
+    Dim leftPos As Double
+    Dim topPos As Double
+
+    Set br = GameSheet.Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS)
+
+    leftPos = br.Left + (br.Width - FACE_SIZE) / 2
+    topPos = GameSheet.Cells(BOARD_TOP - 2, BOARD_LEFT).Top + 1
+
+    SetupFaceShape FACE_UNPRESSED, leftPos, topPos
+    SetupFaceShape FACE_PRESSED, leftPos, topPos
+    SetupFaceShape FACE_WIN, leftPos, topPos
+    SetupFaceShape FACE_LOSE, leftPos, topPos
+End Sub
+
+Private Sub SetupFaceShape( _
+    ByVal shpName As String, _
+    ByVal leftPos As Double, _
+    ByVal topPos As Double _
+)
+    Dim shp As Shape
+
+    On Error Resume Next
+    Set shp = GameSheet.Shapes(shpName)
+    On Error GoTo 0
+
+    If shp Is Nothing Then Exit Sub
+
+    With shp
+        .Left = leftPos
+        .Top = topPos
+        .Width = FACE_SIZE
+        .Height = FACE_SIZE
+        .Placement = xlFreeFloating
+        .OnAction = "NewGame"
+        .Visible = msoFalse
+    End With
+End Sub
+
 Public Sub RenderFace()
     Select Case GameStatus
         Case GAME_WIN
@@ -207,17 +245,14 @@ Public Sub RenderFacePressed()
 End Sub
 
 Private Sub ShowFace(ByVal visibleName As String)
-    SetupFaceShape FACE_UNPRESSED, visibleName
-    SetupFaceShape FACE_PRESSED, visibleName
-    SetupFaceShape FACE_WIN, visibleName
-    SetupFaceShape FACE_LOSE, visibleName
+    SetFaceVisible FACE_UNPRESSED, visibleName
+    SetFaceVisible FACE_PRESSED, visibleName
+    SetFaceVisible FACE_WIN, visibleName
+    SetFaceVisible FACE_LOSE, visibleName
 End Sub
 
-Private Sub SetupFaceShape(ByVal shpName As String, ByVal visibleName As String)
+Private Sub SetFaceVisible(ByVal shpName As String, ByVal visibleName As String)
     Dim shp As Shape
-    Dim br As Range
-    Dim leftPos As Double
-    Dim topPos As Double
 
     On Error Resume Next
     Set shp = GameSheet.Shapes(shpName)
@@ -225,24 +260,10 @@ Private Sub SetupFaceShape(ByVal shpName As String, ByVal visibleName As String)
 
     If shp Is Nothing Then Exit Sub
 
-    Set br = GameSheet.Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS)
-
-    leftPos = br.Left + (br.Width - FACE_SIZE) / 2
-    topPos = GameSheet.Cells(BOARD_TOP - 2, BOARD_LEFT).Top + 1
-
-    With shp
-        .Left = leftPos
-        .Top = topPos
-        .Width = FACE_SIZE
-        .Height = FACE_SIZE
-        .Placement = xlMoveAndSize
-        .OnAction = "NewGame"
-
-        If shpName = visibleName Then
-            .Visible = msoTrue
-            .ZOrder msoBringToFront
-        Else
-            .Visible = msoFalse
-        End If
-    End With
+    If shpName = visibleName Then
+        shp.Visible = msoTrue
+        shp.ZOrder msoBringToFront
+    Else
+        shp.Visible = msoFalse
+    End If
 End Sub
