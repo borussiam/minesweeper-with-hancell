@@ -4,6 +4,7 @@ Option Private Module
 Public Sub InitBoard()
 	ClearSheet
 	FormatBoard
+    InitTileLayer
 	WriteStatus
 	WriteTimer
     InitFaceLayout
@@ -267,3 +268,146 @@ Private Sub SetFaceVisible(ByVal shpName As String, ByVal visibleName As String)
         shp.Visible = msoFalse
     End If
 End Sub
+
+Public Sub InitTileLayer()
+    Dim r As Long
+    Dim c As Long
+
+    For r = 1 To BOARD_ROWS
+        For c = 1 To BOARD_COLS
+            SetTileShape r, c
+        Next c
+    Next r
+End Sub
+
+Private Sub SetTileShape(ByVal r As Long, ByVal c As Long)
+    Dim shp As Shape
+    Dim cell As Range
+    Dim tileName As String
+
+    tileName = TileId(r, c)
+    Set cell = GameSheet.Cells(BOARD_TOP + r - 1, BOARD_LEFT + c - 1)
+
+    On Error Resume Next
+    Set shp = GameSheet.Shapes(tileName)
+    On Error GoTo 0
+
+    If shp Is Nothing Then
+        Set shp = GameSheet.Shapes.AddShape( _
+            msoShapeRectangle, _
+            cell.Left, _
+            cell.Top, _
+            cell.Width, _
+            cell.Height _
+        )
+
+        shp.Name = tileName
+    End If
+
+    With shp
+        .Left = cell.Left
+        .Top = cell.Top
+        .Width = cell.Width
+        .Height = cell.Height
+
+        .Placement = xlMoveAndSize
+        .OnAction = "TileClick"
+
+        .Line.Visible = msoFalse
+
+        .Fill.Visible = msoTrue
+        .Fill.Solid
+        .Fill.ForeColor.RGB = RGB(255, 255, 255)
+        .Fill.Transparency = 0.95
+
+        .ZOrder msoBringToFront
+    End With
+End Sub
+
+Private Function TileId(ByVal r As Long, ByVal c As Long) As String
+    TileId = "tile_" & r & "_" & c
+End Function
+
+Public Function GetTile(ByVal r As Long, ByVal c As Long) As String
+    If GameStatus = GAME_WIN Then
+        GetTile = WinTile(r, c)
+        Exit Function
+    End If
+
+    If GameStatus = GAME_OVER Then
+        GetTile = GameOverTile(r, c)
+        Exit Function
+    End If
+
+    GetTile = NormalTile(r, c)
+End Function
+
+Private Function NormalTile(ByVal r As Long, ByVal c As Long) As String
+    If Not Opened(r, c) Then
+        If Flagged(r, c) Then
+            NormalTile = TILE_FLAG
+        Else
+            NormalTile = TILE_CLOSED
+        End If
+        Exit Function
+    End If
+
+    NormalTile = OpenTile(r, c)
+End Function
+
+Private Function WinTile(ByVal r As Long, ByVal c As Long) As String
+    If Mine(r, c) Then
+        WinTile = TILE_FLAG
+    Else
+        WinTile = OpenTile(r, c)
+    End If
+End Function
+
+Private Function GameOverTile(ByVal r As Long, ByVal c As Long) As String
+    If Mine(r, c) Then
+        If r = HitMineRow And c = HitMineCol Then
+            GameOverTile = TILE_MINE_RED
+        ElseIf Flagged(r, c) Then
+            GameOverTile = TILE_FLAG
+        Else
+            GameOverTile = TILE_MINE
+        End If
+        Exit Function
+    End If
+
+    If Flagged(r, c) Then
+        GameOverTile = TILE_MINE_WRONG
+        Exit Function
+    End If
+
+    If Opened(r, c) Then
+        GameOverTile = OpenTile(r, c)
+    Else
+        GameOverTile = TILE_CLOSED
+    End If
+End Function
+
+Private Function OpenTile(ByVal r As Long, ByVal c As Long) As String
+    Select Case MineCount(r, c)
+        Case 0
+            OpenTile = TILE_TYPE0
+        Case 1
+            OpenTile = TILE_TYPE1
+        Case 2
+            OpenTile = TILE_TYPE2
+        Case 3
+            OpenTile = TILE_TYPE3
+        Case 4
+            OpenTile = TILE_TYPE4
+        Case 5
+            OpenTile = TILE_TYPE5
+        Case 6
+            OpenTile = TILE_TYPE6
+        Case 7
+            OpenTile = TILE_TYPE7
+        Case 8
+            OpenTile = TILE_TYPE8
+        Case Else
+            OpenTile = TILE_TYPE0
+    End Select
+End Function

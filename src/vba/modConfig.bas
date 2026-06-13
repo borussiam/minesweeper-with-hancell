@@ -2,10 +2,11 @@ Option Explicit
 Option Private Module
 
 Public Const SHEET_NAME As String = "Sheet1"
+Public Const ASSET_SHEET_NAME As String = "_assets"
 
-Public Const BOARD_ROWS As Long = 16
-Public Const BOARD_COLS As Long = 30
-Public Const MINE_TOTAL As Long = 99
+Public Const BOARD_ROWS As Long = 10
+Public Const BOARD_COLS As Long = 10
+Public Const MINE_TOTAL As Long = 10
 
 Public Const BOARD_TOP As Long = 3
 Public Const BOARD_LEFT As Long = 2
@@ -29,8 +30,27 @@ Public Const FACE_LOSE As String = "face_lose"
 
 Public Const FACE_SIZE As Double = 40
 
+Public Const TILE_CLOSED As String = "closed"
+Public Const TILE_TYPE0 As String = "type0"
+Public Const TILE_TYPE1 As String = "type1"
+Public Const TILE_TYPE2 As String = "type2"
+Public Const TILE_TYPE3 As String = "type3"
+Public Const TILE_TYPE4 As String = "type4"
+Public Const TILE_TYPE5 As String = "type5"
+Public Const TILE_TYPE6 As String = "type6"
+Public Const TILE_TYPE7 As String = "type7"
+Public Const TILE_TYPE8 As String = "type8"
+Public Const TILE_FLAG As String = "flag"
+Public Const TILE_MINE As String = "mine"
+Public Const TILE_MINE_RED As String = "mine_red"
+Public Const TILE_MINE_WRONG As String = "mine_wrong"
+
 Public Function GameSheet() As Worksheet
     Set GameSheet = ThisWorkbook.Worksheets(SHEET_NAME)
+End Function
+
+Public Function AssetSheet() As Worksheet
+    Set AssetSheet = ThisWorkbook.Worksheets(ASSET_SHEET_NAME)
 End Function
 
 Public Function FlagText() As String

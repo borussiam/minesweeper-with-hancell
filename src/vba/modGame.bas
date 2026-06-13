@@ -44,11 +44,17 @@ Public Function HandleCellSelect(ByVal Target As Range) As Boolean
     Dim r As Long
     Dim c As Long
 
-    If IsResetting Then Exit Function
-    If GameStatus = GAME_WIN Or GameStatus = GAME_OVER Then Exit Function
     If Not IsBoardCell(Target) Then Exit Function
 
     CellToBoardPos Target, r, c
+
+    HandleCellSelect = HandleBoardClick(r, c)
+End Function
+
+Public Function HandleBoardClick(ByVal r As Long, ByVal c As Long) As Boolean
+    If IsResetting Then Exit Function
+    If GameStatus = GAME_WIN Or GameStatus = GAME_OVER Then Exit Function
+    If Not IsInsideBoard(r, c) Then Exit Function
 
     If GameStatus = GAME_READY Then
         StartGame r, c
@@ -62,8 +68,27 @@ Public Function HandleCellSelect(ByVal Target As Range) As Boolean
         OpenCell r, c
     End If
 
-    HandleCellSelect = True
+    HandleBoardClick = True
 End Function
+
+Public Sub TileClick()
+    Dim caller As String
+    Dim parts() As String
+    Dim r As Long
+    Dim c As Long
+
+    caller = CStr(Application.Caller)
+
+    parts = Split(caller, "_")
+
+    If UBound(parts) <> 2 Then Exit Sub
+    If parts(0) <> "tile" Then Exit Sub
+
+    r = CLng(parts(1))
+    c = CLng(parts(2))
+
+    HandleBoardClick r, c
+End Sub
 
 Public Sub OpenCell(ByVal r As Long, ByVal c As Long)
     RevealCell r, c
@@ -226,3 +251,57 @@ Private Sub WaitSeconds(ByVal seconds As Double)
         DoEvents
     Loop While elapsed < seconds
 End Sub
+
+Public Sub RenameSelectedShape()
+    Dim newName As String
+
+    newName = InputBox("새 Shape 이름을 입력하세요.")
+    If newName = "" Then Exit Sub
+
+    Selection.ShapeRange(1).Name = newName
+End Sub
+
+Public Sub CheckTiles()
+    Dim names As Variant
+    Dim i As Long
+    Dim missing As String
+
+    names = Array( _
+        TILE_CLOSED, _
+        TILE_TYPE0, _
+        TILE_TYPE1, _
+        TILE_TYPE2, _
+        TILE_TYPE3, _
+        TILE_TYPE4, _
+        TILE_TYPE5, _
+        TILE_TYPE6, _
+        TILE_TYPE7, _
+        TILE_TYPE8, _
+        TILE_FLAG, _
+        TILE_MINE, _
+        TILE_MINE_RED, _
+        TILE_MINE_WRONG _
+    )
+
+    For i = LBound(names) To UBound(names)
+        If Not HasShape(AssetSheet, CStr(names(i))) Then
+            missing = missing & CStr(names(i)) & vbCrLf
+        End If
+    Next i
+
+    If missing = "" Then
+        MsgBox "타일 이미지가 모두 확인되었습니다."
+    Else
+        MsgBox "누락된 타일 이미지가 있습니다:" & vbCrLf & missing
+    End If
+End Sub
+
+Private Function HasShape(ByVal ws As Worksheet, ByVal shpName As String) As Boolean
+    Dim shp As Shape
+
+    On Error Resume Next
+    Set shp = ws.Shapes(shpName)
+    On Error GoTo 0
+
+    HasShape = Not shp Is Nothing
+End Function
