@@ -71,6 +71,7 @@ Anything is possible at the Ministry of National Defense...
   - Place images for ~~mines, flags, board~~(done), and everyting else
     - clock, mine count, mode buttons
   - Redesign: independent from the grid
+  - Add "pressed" image for better experience
 - Add difficulty choices(beginner, intermediate, expert) and custom boards
 ### Later, if not never (in likely-to-be-done order)
 - Add Ranking
