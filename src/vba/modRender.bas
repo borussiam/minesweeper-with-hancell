@@ -311,9 +311,7 @@ Public Sub SetTileShape(ByVal r As Long, ByVal c As Long, ByVal tile As String)
     Set cell = GameSheet.Cells(BOARD_TOP + r - 1, BOARD_LEFT + c - 1)
     shpName = TileId(r, c)
 
-    On Error Resume Next
-    GameSheet.Shapes(shpName).Delete
-    On Error GoTo 0
+    DeleteShapeIfExists GameSheet, shpName
 
     beforeCount = GameSheet.Shapes.Count
 
@@ -369,16 +367,6 @@ End Sub
 
 Private Function TileId(ByVal r As Long, ByVal c As Long) As String
     TileId = "tile_" & r & "_" & c
-End Function
-
-Private Function HasShape(ByVal ws As Worksheet, ByVal shpName As String) As Boolean
-    Dim shp As Shape
-
-    On Error Resume Next
-    Set shp = ws.Shapes(shpName)
-    On Error GoTo 0
-
-    HasShape = Not shp Is Nothing
 End Function
 
 Public Function GetTile(ByVal r As Long, ByVal c As Long) As String
