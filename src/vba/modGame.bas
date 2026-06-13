@@ -144,6 +144,7 @@ Private Sub RevealCell(ByVal startR As Long, ByVal startC As Long)
             HitMineRow = startR
             HitMineCol = startC
         End If
+        MarkChanged startR, startC
         Exit Sub
     End If
 
@@ -194,14 +195,19 @@ Private Sub FinishTurn()
         GameEndTick = Timer
         GameStatus = GAME_OVER
         StopTimer
-        RenderCell HitMineRow, HitMineCol, False
     ElseIf OpenedCount = BOARD_ROWS * BOARD_COLS - MINE_TOTAL Then
         GameEndTick = Timer
         GameStatus = GAME_WIN
         StopTimer
     End If
     RenderFace
-    RenderBoard
+
+    If GameStatus = GAME_WIN Or GameStatus = GAME_OVER Then
+        RenderAllTiles
+    Else
+        RenderChangedTiles
+    End If
+    
     WriteStatus
     WriteTimer
 End Sub
@@ -216,6 +222,8 @@ Private Sub MarkOpened(ByVal r As Long, ByVal c As Long)
 
     Opened(r, c) = True
     OpenedCount = OpenedCount + 1
+
+    MarkChanged r, c
 End Sub
 
 Public Sub ToggleFlag(ByVal r As Long, ByVal c As Long)
@@ -231,5 +239,6 @@ Public Sub ToggleFlag(ByVal r As Long, ByVal c As Long)
     End If
     WriteStatus
 
+    MarkChanged r, c
     RenderCell r, c, True
 End Sub

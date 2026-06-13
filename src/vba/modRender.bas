@@ -2,13 +2,13 @@ Option Explicit
 Option Private Module
 
 Public Sub InitBoard()
-	ClearSheet
-	FormatBoard
+    ClearSheet
+    FormatBoard
     InitTileLayer
-	WriteStatus
-	WriteTimer
+    WriteStatus
+    WriteTimer
     InitFaceLayout
-	RenderFace
+    RenderFace
 End Sub
 
 Private Sub ClearSheet()
@@ -22,22 +22,22 @@ Private Sub FormatBoard()
     Columns.ColumnWidth = 2.78
     Rows.RowHeight = 24
 
-	Dim br As Range
-	Set br = Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS)
+    Dim br As Range
+    Set br = Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS)
 
-	With br
-		.NumberFormat = "0;;;@"
-		.Value = CELL_CLOSED
+    With br
+        .NumberFormat = "0;;;@"
+        .Value = CELL_CLOSED
         .Interior.Color = RGB(230, 230, 230)
         .HorizontalAlignment = xlCenter
         .VerticalAlignment = xlCenter
         .Borders.LineStyle = xlContinuous
         .Font.Name = "Segoe UI Emoji"
         .Font.Bold = True
-		.FormatConditions.Delete
+        .FormatConditions.Delete
     End With
 
-	ApplyCondFormatting br
+    ApplyCondFormatting br
 End Sub
 
 Private Sub ApplyCondFormatting(ByVal br As Range)
@@ -81,23 +81,23 @@ Private Sub ApplyCondFormatting(ByVal br As Range)
 End Sub
 
 Public Sub WriteStatus()
-	Dim statusText As String
-	Dim modeText As String
-	Dim MinesLeft As Long
+    Dim statusText As String
+    Dim modeText As String
+    Dim MinesLeft As Long
 
-	MinesLeft = MINE_TOTAL - FlaggedCount
+    MinesLeft = MINE_TOTAL - FlaggedCount
 
-	Select Case GameStatus
-		Case GAME_READY
-			statusText = "준비"
-		Case GAME_ONGOING
-			statusText = "진행 중"
-		Case GAME_WIN
-			statusText = "승리!"
-			MinesLeft = 0
-		Case GAME_OVER
-			statusText = "게임 오버"
-	End Select
+    Select Case GameStatus
+        Case GAME_READY
+            statusText = "준비"
+        Case GAME_ONGOING
+            statusText = "진행 중"
+        Case GAME_WIN
+            statusText = "승리!"
+            MinesLeft = 0
+        Case GAME_OVER
+            statusText = "게임 오버"
+    End Select
 
     If CurrentMode = MODE_FLAG Then
         modeText = "깃발"
@@ -106,7 +106,7 @@ Public Sub WriteStatus()
     End If
 
     Cells(BOARD_TOP - 2, BOARD_LEFT).Value = "상태: " & statusText 
-	Cells(BOARD_TOP - 2, BOARD_LEFT + BOARD_COLS - 2).Value = "모드: " & modeText
+    Cells(BOARD_TOP - 2, BOARD_LEFT + BOARD_COLS - 2).Value = "모드: " & modeText
     Cells(BOARD_TOP - 1, BOARD_LEFT).Value = "남은 지뢰 수: " & MinesLeft
 End Sub
 
@@ -126,65 +126,65 @@ Public Sub WriteTimer()
 End Sub
 
 Public Sub RenderCell(ByVal r As Long, ByVal c As Long, isFlag as Boolean)
-	Dim curr As Range
-	Set curr = GameSheet.Cells(r + BOARD_TOP - 1, c + BOARD_LEFT - 1)
-	If isFlag Then
-		If Flagged(r, c) Then
-			curr.Value = FlagText
-		Else
-			curr.Value = CELL_CLOSED
-		End If
-	ElseIf Mine(r, c) Then
-		curr.Value = MineText
-		curr.Interior.Color = RGB(255, 0, 0)
-	ElseIf MineCount(r, c) > 0 Then
-		curr.Value = MineCount(r, c)
-	End If
+    Dim curr As Range
+    Set curr = GameSheet.Cells(r + BOARD_TOP - 1, c + BOARD_LEFT - 1)
+    If isFlag Then
+        If Flagged(r, c) Then
+            curr.Value = FlagText
+        Else
+            curr.Value = CELL_CLOSED
+        End If
+    ElseIf Mine(r, c) Then
+        curr.Value = MineText
+        curr.Interior.Color = RGB(255, 0, 0)
+    ElseIf MineCount(r, c) > 0 Then
+        curr.Value = MineCount(r, c)
+    End If
 
     RenderTile r, c
 End Sub
 
 Public Sub RenderBoard()
-	Dim outArr() As Variant
-	Dim r as Long, c as Long
-	ReDim outArr(1 To BOARD_ROWS, 1 To BOARD_COLS)
+    Dim outArr() As Variant
+    Dim r as Long, c as Long
+    ReDim outArr(1 To BOARD_ROWS, 1 To BOARD_COLS)
 
-	For r = 1 To BOARD_ROWS
-		For c = 1 To BOARD_COLS
-			If GameStatus = GAME_WIN Then
-				If Mine(r, c) Then
-					outArr(r, c) = FlagText
-				Else
-					outArr(r, c) = MineCount(r, c)
-				End If
-			ElseIf GameStatus = GAME_OVER Then
-				If Mine(r, c) Then
-					If Flagged(r, c) Then
-						outArr(r, c) = FlagText
-					Else
-						outArr(r, c) = MineText
-					End If
-				ElseIf Flagged(r, c) Then
-					outArr(r, c) = FlagText
-					GameSheet.Cells(r + BOARD_TOP - 1, c + BOARD_LEFT - 1).Interior.Color = RGB(255, 160, 160)
-				ElseIf Opened(r, c) Then
-					outArr(r, c) = MineCount(r, c)
-				Else
-					outArr(r, c) = CELL_CLOSED
-				End If
-			ElseIf Not Opened(r, c) Then
-				If Flagged(r, c) Then
-					outArr(r, c) = FlagText
-				Else
-					outArr(r, c) = CELL_CLOSED
-				End If
-			ElseIf Mine(r, c) Then
-				outArr(r, c) = MineText
-			Else
-				outArr(r, c) = MineCount(r, c)
-			End If
-		Next c
-	Next r
+    For r = 1 To BOARD_ROWS
+        For c = 1 To BOARD_COLS
+            If GameStatus = GAME_WIN Then
+                If Mine(r, c) Then
+                    outArr(r, c) = FlagText
+                Else
+                    outArr(r, c) = MineCount(r, c)
+                End If
+            ElseIf GameStatus = GAME_OVER Then
+                If Mine(r, c) Then
+                    If Flagged(r, c) Then
+                        outArr(r, c) = FlagText
+                    Else
+                        outArr(r, c) = MineText
+                    End If
+                ElseIf Flagged(r, c) Then
+                    outArr(r, c) = FlagText
+                    GameSheet.Cells(r + BOARD_TOP - 1, c + BOARD_LEFT - 1).Interior.Color = RGB(255, 160, 160)
+                ElseIf Opened(r, c) Then
+                    outArr(r, c) = MineCount(r, c)
+                Else
+                    outArr(r, c) = CELL_CLOSED
+                End If
+            ElseIf Not Opened(r, c) Then
+                If Flagged(r, c) Then
+                    outArr(r, c) = FlagText
+                Else
+                    outArr(r, c) = CELL_CLOSED
+                End If
+            ElseIf Mine(r, c) Then
+                outArr(r, c) = MineText
+            Else
+                outArr(r, c) = MineCount(r, c)
+            End If
+        Next c
+    Next r
 
     Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS).Value2 = outArr
 
@@ -281,6 +281,8 @@ Public Sub InitTileLayer()
 
     Application.ScreenUpdating = False
 
+    ClearTileLayer
+
     For r = 1 To BOARD_ROWS
         For c = 1 To BOARD_COLS
             SetTileShape r, c, TILE_CLOSED
@@ -293,6 +295,19 @@ CleanUp:
     If Err.Number <> 0 Then
         MsgBox "타일 레이어 초기화 중 오류가 발생했습니다." & vbCrLf & Err.Description
     End If
+End Sub
+
+Public Sub ClearTileLayer()
+    Dim i As Long
+    Dim shp As Shape
+
+    For i = GameSheet.Shapes.Count To 1 Step -1
+        Set shp = GameSheet.Shapes(i)
+
+        If Left$(shp.Name, 5) = "tile_" Then
+            shp.Delete
+        End If
+    Next i
 End Sub
 
 Public Sub SetTileShape(ByVal r As Long, ByVal c As Long, ByVal tile As String)
@@ -327,16 +342,69 @@ Public Sub SetTileShape(ByVal r As Long, ByVal c As Long, ByVal tile As String)
     With shp
         .Name = shpName
         .Visible = msoTrue
-        .Left = cell.Left
-        .Top = cell.Top
-        .Width = cell.Width
-        .Height = cell.Height
-        .Placement = xlMoveAndSize
+    End With
+
+    FitTileToCell shp, cell
+
+    With shp
         .OnAction = "TileClick"
         .ZOrder msoBringToFront
     End With
 
     DrawnTile(r, c) = tile
+End Sub
+
+Private Sub FitTileToCell(ByVal shp As Shape, ByVal cell As Range)
+    Dim w As Double
+    Dim h As Double
+
+    w = cell.Offset(0, 1).Left - cell.Left
+    h = cell.Offset(1, 0).Top - cell.Top
+
+    With shp
+        .LockAspectRatio = msoFalse
+        .Left = cell.Left
+        .Top = cell.Top
+        .Width = w
+        .Height = h
+        .Line.Visible = msoFalse
+        .Placement = xlMoveAndSize
+    End With
+End Sub
+
+Public Sub MarkChanged(ByVal r As Long, ByVal c As Long)
+    If Not IsInsideBoard(r, c) Then Exit Sub
+    If ChangedCount >= BOARD_ROWS * BOARD_COLS Then Exit Sub
+
+    ChangedCount = ChangedCount + 1
+    ChangedR(ChangedCount) = r
+    ChangedC(ChangedCount) = c
+End Sub
+
+Public Sub RenderChangedTiles()
+    Dim i As Long
+
+    If ChangedCount = 0 Then Exit Sub
+
+    On Error GoTo CleanUp
+
+    Application.ScreenUpdating = False
+
+    For i = 1 To ChangedCount
+        RenderTile ChangedR(i), ChangedC(i)
+    Next i
+
+CleanUp:
+    Application.ScreenUpdating = True
+    ChangedCount = 0
+
+    If Err.Number <> 0 Then
+        MsgBox "변경 타일 렌더링 중 오류가 발생했습니다." & vbCrLf & Err.Description
+    End If
+End Sub
+
+Public Sub ClearChangedTiles()
+    ChangedCount = 0
 End Sub
 
 Public Sub RenderTile(ByVal r As Long, ByVal c As Long)
