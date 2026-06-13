@@ -78,7 +78,6 @@ Public Sub TileClick()
     Dim c As Long
 
     caller = CStr(Application.Caller)
-
     parts = Split(caller, "_")
 
     If UBound(parts) <> 2 Then Exit Sub
@@ -305,3 +304,45 @@ Private Function HasShape(ByVal ws As Worksheet, ByVal shpName As String) As Boo
 
     HasShape = Not shp Is Nothing
 End Function
+
+Public Sub ArrangeTileSources()
+    Dim names As Variant
+    Dim i As Long
+    Dim baseCell As Range
+    Dim shp As Shape
+
+    names = Array( _
+        TILE_CLOSED, _
+        TILE_TYPE0, _
+        TILE_TYPE1, _
+        TILE_TYPE2, _
+        TILE_TYPE3, _
+        TILE_TYPE4, _
+        TILE_TYPE5, _
+        TILE_TYPE6, _
+        TILE_TYPE7, _
+        TILE_TYPE8, _
+        TILE_FLAG, _
+        TILE_MINE, _
+        TILE_MINE_RED, _
+        TILE_MINE_WRONG _
+    )
+
+    Set baseCell = GameSheet.Range("EA1")
+
+    For i = LBound(names) To UBound(names)
+        Set shp = GameSheet.Shapes(CStr(names(i)))
+
+        With shp
+            .Left = baseCell.Offset(i, 0).Left
+            .Top = baseCell.Offset(i, 0).Top
+            .Width = 24
+            .Height = 24
+            .Placement = xlFreeFloating
+            .OnAction = ""
+            .Visible = msoTrue
+        End With
+    Next i
+
+    MsgBox "원본 타일 이미지를 게임 시트 오른쪽 보관 구역으로 이동했습니다."
+End Sub

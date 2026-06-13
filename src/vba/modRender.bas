@@ -140,6 +140,8 @@ Public Sub RenderCell(ByVal r As Long, ByVal c As Long, isFlag as Boolean)
 	ElseIf MineCount(r, c) > 0 Then
 		curr.Value = MineCount(r, c)
 	End If
+
+    RenderTile r, c
 End Sub
 
 Public Sub RenderBoard()
@@ -185,6 +187,8 @@ Public Sub RenderBoard()
 	Next r
 
     Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS).Value2 = outArr
+
+    RenderAllTiles
 End Sub
 
 Private Sub InitFaceLayout()
@@ -273,59 +277,108 @@ Public Sub InitTileLayer()
     Dim r As Long
     Dim c As Long
 
+    On Error GoTo CleanUp
+
+    Application.ScreenUpdating = False
+
     For r = 1 To BOARD_ROWS
         For c = 1 To BOARD_COLS
-            SetTileShape r, c
+            SetTileShape r, c, TILE_CLOSED
         Next c
     Next r
+
+CleanUp:
+    Application.ScreenUpdating = True
+
+    If Err.Number <> 0 Then
+        MsgBox "타일 레이어 초기화 중 오류가 발생했습니다." & vbCrLf & Err.Description
+    End If
 End Sub
 
-Private Sub SetTileShape(ByVal r As Long, ByVal c As Long)
-    Dim shp As Shape
+Public Sub SetTileShape(ByVal r As Long, ByVal c As Long, ByVal tile As String)
     Dim cell As Range
-    Dim tileName As String
+    Dim shpName As String
+    Dim shp As Shape
+    Dim beforeCount As Long
 
-    tileName = TileId(r, c)
-    Set cell = GameSheet.Cells(BOARD_TOP + r - 1, BOARD_LEFT + c - 1)
+    If DrawnTile(r, c) = tile Then Exit Sub
 
-    On Error Resume Next
-    Set shp = GameSheet.Shapes(tileName)
-    On Error GoTo 0
-
-    If shp Is Nothing Then
-        Set shp = GameSheet.Shapes.AddShape( _
-            msoShapeRectangle, _
-            cell.Left, _
-            cell.Top, _
-            cell.Width, _
-            cell.Height _
-        )
-
-        shp.Name = tileName
+    If Not HasShape(GameSheet, tile) Then
+        MsgBox "원본 타일 Shape를 찾을 수 없습니다: " & tile
+        Exit Sub
     End If
 
+    Set cell = GameSheet.Cells(BOARD_TOP + r - 1, BOARD_LEFT + c - 1)
+    shpName = TileId(r, c)
+
+    On Error Resume Next
+    GameSheet.Shapes(shpName).Delete
+    On Error GoTo 0
+
+    beforeCount = GameSheet.Shapes.Count
+
+    GameSheet.Shapes(tile).Duplicate
+
+    If GameSheet.Shapes.Count <= beforeCount Then
+        MsgBox "타일 복제에 실패했습니다: " & tile
+        Exit Sub
+    End If
+
+    Set shp = GameSheet.Shapes(GameSheet.Shapes.Count)
+
     With shp
+        .Name = shpName
+        .Visible = msoTrue
         .Left = cell.Left
         .Top = cell.Top
         .Width = cell.Width
         .Height = cell.Height
-
         .Placement = xlMoveAndSize
         .OnAction = "TileClick"
-
-        .Line.Visible = msoFalse
-
-        .Fill.Visible = msoTrue
-        .Fill.Solid
-        .Fill.ForeColor.RGB = RGB(255, 255, 255)
-        .Fill.Transparency = 0.95
-
         .ZOrder msoBringToFront
     End With
+
+    DrawnTile(r, c) = tile
+End Sub
+
+Public Sub RenderTile(ByVal r As Long, ByVal c As Long)
+    SetTileShape r, c, GetTile(r, c)
+End Sub
+
+Public Sub RenderAllTiles()
+    Dim r As Long
+    Dim c As Long
+
+    On Error GoTo CleanUp
+
+    Application.ScreenUpdating = False
+
+    For r = 1 To BOARD_ROWS
+        For c = 1 To BOARD_COLS
+            RenderTile r, c
+        Next c
+    Next r
+
+CleanUp:
+    Application.ScreenUpdating = True
+
+    If Err.Number <> 0 Then
+        MsgBox "타일 렌더링 중 오류가 발생했습니다." & vbCrLf & Err.Description
+    End If
 End Sub
 
 Private Function TileId(ByVal r As Long, ByVal c As Long) As String
     TileId = "tile_" & r & "_" & c
+End Function
+
+Private Function HasShape(ByVal ws As Worksheet, ByVal shpName As String) As Boolean
+    Dim shp As Shape
+
+    On Error Resume Next
+    Set shp = ws.Shapes(shpName)
+    On Error GoTo 0
+
+    HasShape = Not shp Is Nothing
 End Function
 
 Public Function GetTile(ByVal r As Long, ByVal c As Long) As String
