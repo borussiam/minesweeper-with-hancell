@@ -17,14 +17,33 @@ Public Const BOARD_Y As Double = 90
 Public Const TILE_SIZE As Double = 24
 Public Const TILE_OVERLAP As Double = 0
 
-Public Const UI_GAP As Double = 8
+Public Const HUD_Y As Double = 24
+Public Const HUD_HEIGHT As Double = 56
+Public Const HUD_PADDING_X As Double = 10
+
+Public Const DIGIT_WIDTH As Double = 20
+Public Const DIGIT_HEIGHT As Double = 37.5
+Public Const COUNTER_DIGITS As Long = 3
+
+Public Const DIGIT_0 As String = "d0"
+Public Const DIGIT_1 As String = "d1"
+Public Const DIGIT_2 As String = "d2"
+Public Const DIGIT_3 As String = "d3"
+Public Const DIGIT_4 As String = "d4"
+Public Const DIGIT_5 As String = "d5"
+Public Const DIGIT_6 As String = "d6"
+Public Const DIGIT_7 As String = "d7"
+Public Const DIGIT_8 As String = "d8"
+Public Const DIGIT_9 As String = "d9"
+Public Const DIGIT_MINUS As String = "d-"
+
+Public Const MODE_BTN_WIDTH As Double = 72
+Public Const MODE_BTN_HEIGHT As Double = 28
+Public Const MODE_BTN_GAP As Double = 10
+Public Const MODE_BTN_TOP_GAP As Double = 12
 
 Public Const BTN_OPEN As String = "btn_open"
 Public Const BTN_FLAG As String = "btn_flag"
-
-Public Const MODE_BTN_WIDTH As Double = 64
-Public Const MODE_BTN_HEIGHT As Double = 24
-Public Const MODE_BTN_GAP As Double = 8
 
 Public Const MODE_OPEN As Long = 1
 Public Const MODE_FLAG As Long = 2

@@ -469,6 +469,10 @@ Private Function BoardH() As Double
     BoardH = BOARD_ROWS * TILE_SIZE
 End Function
 
+Private Function CounterW() As Double
+    CounterW = COUNTER_DIGITS * DIGIT_WIDTH
+End Function
+
 Private Function TileX(ByVal c As Long) As Double
     TileX = BOARD_X + (c - 1) * TILE_SIZE
 End Function
