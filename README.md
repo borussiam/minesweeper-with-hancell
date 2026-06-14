@@ -56,6 +56,11 @@ Anything is possible at the Ministry of National Defense...
 ### 2026-06-13
 - Place minesweeper-style images for mines, flags, numbers
 
+### 2026-06-14
+- Place digital number images for timer, mine count
+
+*Completed UI transition*
+
 ## Current Module Structure
 - `modConfig`: Configuration values (e.g. board size and mine count)
 - `modState`: Game state array management
@@ -67,11 +72,8 @@ Anything is possible at the Ministry of National Defense...
 
 ## Remaining Tasks
 ### Soon
-- Edit gameboard and buttons layout & design
-  - Place images for ~~mines, flags, board~~(done), and everyting else
-    - clock, mine count, mode buttons
-  - Redesign: independent from the grid
-  - Add "pressed" image for better experience
+- Redesign mode buttons
+- Add "pressed" image for better experience
 - Add difficulty choices(beginner, intermediate, expert) and custom boards
 ### Later, if not never (in likely-to-be-done order)
 - Add Ranking

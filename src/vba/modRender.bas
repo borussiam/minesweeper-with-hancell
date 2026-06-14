@@ -3,13 +3,16 @@ Option Private Module
 
 Public Sub InitBoard()
     ClearSheet
-    FormatBoard
+    FormatCanvas
+    HideSheetChrome
+
     InitTileLayer
-    WriteStatus
-    WriteTimer
     InitFaceLayout
     InitModeButtonsLayout
-    RenderFace
+
+    RenderHud
+    RenderModeButtons
+    ParkSelection
 End Sub
 
 Private Sub ClearSheet()
@@ -17,6 +20,21 @@ Private Sub ClearSheet()
         .ClearContents
         .ClearFormats
     End With
+End Sub
+
+Private Sub FormatCanvas()
+    With Cells
+        .ClearContents
+        .ClearFormats
+        .Interior.Color = RGB(160, 160, 160)
+    End With
+End Sub
+
+Private Sub HideSheetChrome()
+    On Error Resume Next
+    ActiveWindow.DisplayGridlines = False
+    ActiveWindow.DisplayHeadings = False
+    On Error GoTo 0
 End Sub
 
 Private Sub FormatBoard()
@@ -192,12 +210,144 @@ Public Sub RenderBoard()
     RenderAllTiles
 End Sub
 
+Public Sub RenderHud()
+    RenderMineCounter
+    RenderTimeCounter
+    RenderFace
+    InitModeButtonsLayout
+End Sub
+
+Public Sub RenderMineCounter()
+    Dim minesLeft As Long
+    Dim leftPos As Double
+    Dim topPos As Double
+
+    If GameStatus = GAME_WIN Then
+        minesLeft = 0
+    Else
+        minesLeft = MINE_TOTAL - FlaggedCount
+    End If
+
+    leftPos = BOARD_X + HUD_PADDING_X
+    topPos = HUD_Y + (HUD_HEIGHT - DIGIT_HEIGHT) / 2
+
+    RenderCounter COUNTER_MINE_PREFIX, minesLeft, leftPos, topPos
+End Sub
+
+Public Sub RenderTimeCounter()
+    Dim elapsed As Long
+    Dim leftPos As Double
+    Dim topPos As Double
+
+    elapsed = CLng(Int(GetElapsedSeconds()))
+
+    If elapsed > 999 Then elapsed = 999
+
+    leftPos = BOARD_X + BoardW() - HUD_PADDING_X - CounterW()
+    topPos = HUD_Y + (HUD_HEIGHT - DIGIT_HEIGHT) / 2
+
+    RenderCounter COUNTER_TIME_PREFIX, elapsed, leftPos, topPos
+End Sub
+
+Private Sub RenderCounter( _
+    ByVal prefix As String, _
+    ByVal value As Long, _
+    ByVal leftPos As Double, _
+    ByVal topPos As Double _
+)
+    Dim textValue As String
+    Dim i As Long
+    Dim ch As String
+    Dim srcName As String
+
+    textValue = CounterText(value)
+
+    For i = 1 To COUNTER_DIGITS
+        ch = Mid$(textValue, i, 1)
+        srcName = DigitSource(ch)
+
+        SetDigitShape _
+            prefix, _
+            i, _
+            srcName, _
+            leftPos + (i - 1) * (DIGIT_WIDTH + DIGIT_GAP), _
+            topPos
+    Next i
+End Sub
+
+Private Function CounterText(ByVal value As Long) As String
+    If value < -99 Then value = -99
+    If value > 999 Then value = 999
+
+    If value < 0 Then
+        CounterText = "-" & Right$("00" & CStr(Abs(value)), 2)
+    Else
+        CounterText = Right$("000" & CStr(value), 3)
+    End If
+End Function
+
+Private Function DigitSource(ByVal ch As String) As String
+    If ch = "-" Then
+        DigitSource = "d-"
+    Else
+        DigitSource = "d" & ch
+    End If
+End Function
+
+Private Sub SetDigitShape( _
+    ByVal prefix As String, _
+    ByVal idx As Long, _
+    ByVal srcName As String, _
+    ByVal leftPos As Double, _
+    ByVal topPos As Double _
+)
+    Dim shpName As String
+    Dim beforeCount As Long
+    Dim shp As Shape
+
+    shpName = prefix & idx
+
+    If Not HasShape(GameSheet, srcName) Then
+        MsgBox "원본 숫자 Shape를 찾을 수 없습니다: " & srcName
+        Exit Sub
+    End If
+
+    DeleteShapeIfExists GameSheet, shpName
+
+    beforeCount = GameSheet.Shapes.Count
+
+    GameSheet.Shapes(srcName).Duplicate
+
+    If GameSheet.Shapes.Count <= beforeCount Then
+        MsgBox "숫자 복제에 실패했습니다: " & srcName
+        Exit Sub
+    End If
+
+    Set shp = GameSheet.Shapes(GameSheet.Shapes.Count)
+
+    With shp
+        .Name = shpName
+        .Visible = msoTrue
+        .LockAspectRatio = msoFalse
+
+        .Left = leftPos
+        .Top = topPos
+        .Width = DIGIT_WIDTH
+        .Height = DIGIT_HEIGHT
+
+        .Line.Visible = msoFalse
+        .Placement = xlFreeFloating
+        .OnAction = ""
+        .ZOrder msoBringToFront
+    End With
+End Sub
+
 Private Sub InitFaceLayout()
     Dim leftPos As Double
     Dim topPos As Double
 
     leftPos = BOARD_X + (BoardW() - FACE_SIZE) / 2
-    topPos = BOARD_Y - FACE_SIZE - UI_GAP
+    topPos = HUD_Y + (HUD_HEIGHT - FACE_SIZE) / 2
 
     SetupFaceShape FACE_UNPRESSED, leftPos, topPos
     SetupFaceShape FACE_PRESSED, leftPos, topPos
@@ -272,17 +422,16 @@ Private Sub SetFaceVisible(ByVal shpName As String, ByVal visibleName As String)
 End Sub
 
 Private Sub InitModeButtonsLayout()
+    Dim centerX As Double
     Dim topPos As Double
     Dim openLeft As Double
     Dim flagLeft As Double
-    Dim totalW As Double
 
-    topPos = BOARD_Y + BoardH() + UI_GAP
+    centerX = BOARD_X + BoardW() / 2
+    topPos = BoardY() + BoardH() + MODE_BTN_TOP_GAP
 
-    totalW = MODE_BTN_WIDTH * 2 + MODE_BTN_GAP
-
-    openLeft = BOARD_X + (BoardW() - totalW) / 2
-    flagLeft = openLeft + MODE_BTN_WIDTH + MODE_BTN_GAP
+    openLeft = centerX - MODE_BTN_GAP / 2 - MODE_BTN_WIDTH
+    flagLeft = centerX + MODE_BTN_GAP / 2
 
     SetupModeButton BTN_OPEN, openLeft, topPos, MODE_BTN_WIDTH, MODE_BTN_HEIGHT, "SetOpenMode"
     SetupModeButton BTN_FLAG, flagLeft, topPos, MODE_BTN_WIDTH, MODE_BTN_HEIGHT, "SetFlagMode"
@@ -303,14 +452,68 @@ Private Sub SetupModeButton( _
     Set shp = GameSheet.Shapes(shpName)
 
     With shp
+        .Visible = msoTrue
+        .LockAspectRatio = msoFalse
+
         .Left = leftPos
         .Top = topPos
         .Width = w
         .Height = h
+
         .Placement = xlFreeFloating
         .OnAction = macroName
         .ZOrder msoBringToFront
     End With
+End Sub
+
+Public Sub RenderModeButtons()
+    ApplyModeButtonStyle BTN_OPEN, (CurrentMode = MODE_OPEN)
+    ApplyModeButtonStyle BTN_FLAG, (CurrentMode = MODE_FLAG)
+End Sub
+
+Private Sub ApplyModeButtonStyle(ByVal shpName As String, ByVal isActive As Boolean)
+    Dim shp As Shape
+
+    If Not HasShape(GameSheet, shpName) Then Exit Sub
+    Set shp = GameSheet.Shapes(shpName)
+
+    With shp
+        .Visible = msoTrue
+        .Placement = xlFreeFloating
+        .Line.Visible = msoTrue
+    End With
+
+    Select Case shpName
+        Case BTN_OPEN
+            If isActive Then
+                With shp
+                    .Fill.ForeColor.RGB = RGB(68, 114, 196)
+                    .Line.ForeColor.RGB = RGB(0, 0, 0)
+                    .Line.Weight = 3
+                End With
+            Else
+                With shp
+                    .Fill.ForeColor.RGB = RGB(150, 175, 220)
+                    .Line.ForeColor.RGB = RGB(90, 90, 90)
+                    .Line.Weight = 1
+                End With
+            End If
+
+        Case BTN_FLAG
+            If isActive Then
+                With shp
+                    .Fill.ForeColor.RGB = RGB(237, 125, 49)
+                    .Line.ForeColor.RGB = RGB(0, 0, 0)
+                    .Line.Weight = 3
+                End With
+            Else
+                With shp
+                    .Fill.ForeColor.RGB = RGB(230, 160, 105)
+                    .Line.ForeColor.RGB = RGB(90, 90, 90)
+                    .Line.Weight = 1
+                End With
+            End If
+    End Select
 End Sub
 
 Public Sub InitTileLayer()
@@ -461,6 +664,10 @@ CleanUp:
     End If
 End Sub
 
+Private Function BoardY() As Double
+    BoardY = HUD_Y + HUD_HEIGHT + HUD_TO_BOARD_GAP
+End Function
+
 Private Function BoardW() As Double
     BoardW = BOARD_COLS * TILE_SIZE
 End Function
@@ -478,7 +685,7 @@ Private Function TileX(ByVal c As Long) As Double
 End Function
 
 Private Function TileY(ByVal r As Long) As Double
-    TileY = BOARD_Y + (r - 1) * TILE_SIZE
+    TileY = BoardY() + (r - 1) * TILE_SIZE
 End Function
 
 Private Function TileId(ByVal r As Long, ByVal c As Long) As String

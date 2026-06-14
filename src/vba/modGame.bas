@@ -27,17 +27,18 @@ Private Sub StartGame(ByVal firstR As Long, ByVal firstC As Long)
     GameStatus = GAME_ONGOING
     RenderFace
     StartTimer
-    WriteStatus
 End Sub
 
 Public Sub SetOpenMode()
     CurrentMode = MODE_OPEN
-    WriteStatus
+    RenderModeButtons
+    ParkSelection
 End Sub
 
 Public Sub SetFlagMode()
     CurrentMode = MODE_FLAG
-    WriteStatus
+    RenderModeButtons
+    ParkSelection
 End Sub
 
 Public Function HandleCellSelect(ByVal Target As Range) As Boolean
@@ -200,16 +201,14 @@ Private Sub FinishTurn()
         GameStatus = GAME_WIN
         StopTimer
     End If
-    RenderFace
 
     If GameStatus = GAME_WIN Or GameStatus = GAME_OVER Then
         RenderAllTiles
     Else
         RenderChangedTiles
     End If
-    
-    WriteStatus
-    WriteTimer
+
+    RenderHud
 End Sub
 
 Private Sub MarkOpened(ByVal r As Long, ByVal c As Long)
@@ -237,8 +236,7 @@ Public Sub ToggleFlag(ByVal r As Long, ByVal c As Long)
     Else
         FlaggedCount = FlaggedCount - 1
     End If
-    WriteStatus
 
-    MarkChanged r, c
-    RenderCell r, c, True
+    RenderTile r, c
+    RenderMineCounter
 End Sub

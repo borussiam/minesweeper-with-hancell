@@ -158,6 +158,29 @@ Public Sub WaitSeconds(ByVal seconds As Double)
     Loop While elapsed < seconds
 End Sub
 
+Public Sub ParkSelection()
+    Dim sr As Long
+    Dim sc As Long
+
+    On Error GoTo CleanUp
+
+    sr = ActiveWindow.ScrollRow
+    sc = ActiveWindow.ScrollColumn
+
+    Application.EnableEvents = False
+    Application.ScreenUpdating = False
+
+    GameSheet.Activate
+    GameSheet.Range(PARK_CELL).Select
+
+    ActiveWindow.ScrollRow = sr
+    ActiveWindow.ScrollColumn = sc
+
+CleanUp:
+    Application.ScreenUpdating = True
+    Application.EnableEvents = True
+End Sub
+
 Public Sub TestOneTile()
     ReDim DrawnTile(1 To BOARD_ROWS, 1 To BOARD_COLS)
 

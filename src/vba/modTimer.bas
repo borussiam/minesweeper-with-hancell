@@ -7,7 +7,7 @@ Public Sub StartTimer()
     GameEndTick = 0
     NextTimerSecond = 1
 
-    WriteTimer
+    RenderTimeCounter
     ScheduleNextTimerTick
 End Sub
 
@@ -33,7 +33,7 @@ Public Sub TimerTick()
 
     If GameStatus <> GAME_ONGOING Then Exit Sub
 
-    WriteTimer
+    RenderTimeCounter
     NextTimerSecond = NextTimerSecond + 1
     ScheduleNextTimerTick
 End Sub

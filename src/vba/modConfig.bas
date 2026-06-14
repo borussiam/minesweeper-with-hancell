@@ -4,26 +4,30 @@ Option Private Module
 Public Const SHEET_NAME As String = "Sheet1"
 Public Const ASSET_SHEET_NAME As String = "_assets"
 
-Public Const BOARD_ROWS As Long = 10
-Public Const BOARD_COLS As Long = 10
+Public Const BOARD_ROWS As Long = 9
+Public Const BOARD_COLS As Long = 9
 Public Const MINE_TOTAL As Long = 10
 
 Public Const BOARD_TOP As Long = 3
 Public Const BOARD_LEFT As Long = 2
 
 Public Const BOARD_X As Double = 24
-Public Const BOARD_Y As Double = 90
+Public Const HUD_Y As Double = 24
 
 Public Const TILE_SIZE As Double = 24
 Public Const TILE_OVERLAP As Double = 0
 
-Public Const HUD_Y As Double = 24
 Public Const HUD_HEIGHT As Double = 56
+Public Const HUD_TO_BOARD_GAP As Double = 10
 Public Const HUD_PADDING_X As Double = 10
 
 Public Const DIGIT_WIDTH As Double = 20
 Public Const DIGIT_HEIGHT As Double = 37.5
+Public Const DIGIT_GAP As Double = 0
 Public Const COUNTER_DIGITS As Long = 3
+
+Public Const COUNTER_MINE_PREFIX As String = "counter_mine_"
+Public Const COUNTER_TIME_PREFIX As String = "counter_time_"
 
 Public Const DIGIT_0 As String = "d0"
 Public Const DIGIT_1 As String = "d1"
@@ -81,10 +85,6 @@ Public Const TILE_MINE_WRONG As String = "mine_wrong"
 
 Public Function GameSheet() As Worksheet
     Set GameSheet = ThisWorkbook.Worksheets(SHEET_NAME)
-End Function
-
-Public Function AssetSheet() As Worksheet
-    Set AssetSheet = ThisWorkbook.Worksheets(ASSET_SHEET_NAME)
 End Function
 
 Public Function FlagText() As String
