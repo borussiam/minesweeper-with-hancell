@@ -8,6 +8,7 @@ Public Sub InitBoard()
     WriteStatus
     WriteTimer
     InitFaceLayout
+    InitModeButtonsLayout
     RenderFace
 End Sub
 
@@ -192,14 +193,11 @@ Public Sub RenderBoard()
 End Sub
 
 Private Sub InitFaceLayout()
-    Dim br As Range
     Dim leftPos As Double
     Dim topPos As Double
 
-    Set br = GameSheet.Cells(BOARD_TOP, BOARD_LEFT).Resize(BOARD_ROWS, BOARD_COLS)
-
-    leftPos = br.Left + (br.Width - FACE_SIZE) / 2
-    topPos = GameSheet.Cells(BOARD_TOP - 2, BOARD_LEFT).Top + 1
+    leftPos = BOARD_X + (BoardW() - FACE_SIZE) / 2
+    topPos = BOARD_Y - FACE_SIZE - UI_GAP
 
     SetupFaceShape FACE_UNPRESSED, leftPos, topPos
     SetupFaceShape FACE_PRESSED, leftPos, topPos
@@ -273,6 +271,48 @@ Private Sub SetFaceVisible(ByVal shpName As String, ByVal visibleName As String)
     End If
 End Sub
 
+Private Sub InitModeButtonsLayout()
+    Dim topPos As Double
+    Dim openLeft As Double
+    Dim flagLeft As Double
+    Dim totalW As Double
+
+    topPos = BOARD_Y + BoardH() + UI_GAP
+
+    totalW = MODE_BTN_WIDTH * 2 + MODE_BTN_GAP
+
+    openLeft = BOARD_X + (BoardW() - totalW) / 2
+    flagLeft = openLeft + MODE_BTN_WIDTH + MODE_BTN_GAP
+
+    SetupModeButton BTN_OPEN, openLeft, topPos, MODE_BTN_WIDTH, MODE_BTN_HEIGHT, "SetOpenMode"
+    SetupModeButton BTN_FLAG, flagLeft, topPos, MODE_BTN_WIDTH, MODE_BTN_HEIGHT, "SetFlagMode"
+End Sub
+
+Private Sub SetupModeButton( _
+    ByVal shpName As String, _
+    ByVal leftPos As Double, _
+    ByVal topPos As Double, _
+    ByVal w As Double, _
+    ByVal h As Double, _
+    ByVal macroName As String _
+)
+    Dim shp As Shape
+
+    If Not HasShape(GameSheet, shpName) Then Exit Sub
+
+    Set shp = GameSheet.Shapes(shpName)
+
+    With shp
+        .Left = leftPos
+        .Top = topPos
+        .Width = w
+        .Height = h
+        .Placement = xlFreeFloating
+        .OnAction = macroName
+        .ZOrder msoBringToFront
+    End With
+End Sub
+
 Public Sub InitTileLayer()
     Dim r As Long
     Dim c As Long
@@ -311,10 +351,10 @@ Public Sub ClearTileLayer()
 End Sub
 
 Public Sub SetTileShape(ByVal r As Long, ByVal c As Long, ByVal tile As String)
-    Dim cell As Range
     Dim shpName As String
     Dim shp As Shape
     Dim beforeCount As Long
+    Dim size As Double
 
     If DrawnTile(r, c) = tile Then Exit Sub
 
@@ -323,7 +363,6 @@ Public Sub SetTileShape(ByVal r As Long, ByVal c As Long, ByVal tile As String)
         Exit Sub
     End If
 
-    Set cell = GameSheet.Cells(BOARD_TOP + r - 1, BOARD_LEFT + c - 1)
     shpName = TileId(r, c)
 
     DeleteShapeIfExists GameSheet, shpName
@@ -339,37 +378,26 @@ Public Sub SetTileShape(ByVal r As Long, ByVal c As Long, ByVal tile As String)
 
     Set shp = GameSheet.Shapes(GameSheet.Shapes.Count)
 
+    size = TILE_SIZE + TILE_OVERLAP
+
+
     With shp
         .Name = shpName
         .Visible = msoTrue
-    End With
+        .LockAspectRatio = msoFalse
 
-    FitTileToCell shp, cell
+        .Left = TileX(c) - TILE_OVERLAP / 2
+        .Top = TileY(r) - TILE_OVERLAP / 2
+        .Width = size
+        .Height = size
 
-    With shp
+        .Line.Visible = msoFalse
+        .Placement = xlFreeFloating
         .OnAction = "TileClick"
         .ZOrder msoBringToFront
     End With
 
     DrawnTile(r, c) = tile
-End Sub
-
-Private Sub FitTileToCell(ByVal shp As Shape, ByVal cell As Range)
-    Dim w As Double
-    Dim h As Double
-
-    w = cell.Offset(0, 1).Left - cell.Left
-    h = cell.Offset(1, 0).Top - cell.Top
-
-    With shp
-        .LockAspectRatio = msoFalse
-        .Left = cell.Left
-        .Top = cell.Top
-        .Width = w
-        .Height = h
-        .Line.Visible = msoFalse
-        .Placement = xlMoveAndSize
-    End With
 End Sub
 
 Public Sub MarkChanged(ByVal r As Long, ByVal c As Long)
@@ -432,6 +460,22 @@ CleanUp:
         MsgBox "타일 렌더링 중 오류가 발생했습니다." & vbCrLf & Err.Description
     End If
 End Sub
+
+Private Function BoardW() As Double
+    BoardW = BOARD_COLS * TILE_SIZE
+End Function
+
+Private Function BoardH() As Double
+    BoardH = BOARD_ROWS * TILE_SIZE
+End Function
+
+Private Function TileX(ByVal c As Long) As Double
+    TileX = BOARD_X + (c - 1) * TILE_SIZE
+End Function
+
+Private Function TileY(ByVal r As Long) As Double
+    TileY = BOARD_Y + (r - 1) * TILE_SIZE
+End Function
 
 Private Function TileId(ByVal r As Long, ByVal c As Long) As String
     TileId = "tile_" & r & "_" & c

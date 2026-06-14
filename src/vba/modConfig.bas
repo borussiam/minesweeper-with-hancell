@@ -11,6 +11,21 @@ Public Const MINE_TOTAL As Long = 10
 Public Const BOARD_TOP As Long = 3
 Public Const BOARD_LEFT As Long = 2
 
+Public Const BOARD_X As Double = 24
+Public Const BOARD_Y As Double = 90
+
+Public Const TILE_SIZE As Double = 24
+Public Const TILE_OVERLAP As Double = 0
+
+Public Const UI_GAP As Double = 8
+
+Public Const BTN_OPEN As String = "btn_open"
+Public Const BTN_FLAG As String = "btn_flag"
+
+Public Const MODE_BTN_WIDTH As Double = 64
+Public Const MODE_BTN_HEIGHT As Double = 24
+Public Const MODE_BTN_GAP As Double = 8
+
 Public Const MODE_OPEN As Long = 1
 Public Const MODE_FLAG As Long = 2
 
