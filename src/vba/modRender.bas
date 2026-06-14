@@ -276,11 +276,19 @@ Private Sub RenderCounter( _
 End Sub
 
 Private Function CounterText(ByVal value As Long) As String
-    If value < -99 Then value = -99
+    Dim absValue As Long
+
     If value > 999 Then value = 999
+    If value < -99 Then value = -99
 
     If value < 0 Then
-        CounterText = "-" & Right$("00" & CStr(Abs(value)), 2)
+        absValue = Abs(value)
+
+        If absValue < 10 Then
+            CounterText = "0-" & CStr(absValue)
+        Else
+            CounterText = "-" & Right$("00" & CStr(absValue), 2)
+        End If
     Else
         CounterText = Right$("000" & CStr(value), 3)
     End If
