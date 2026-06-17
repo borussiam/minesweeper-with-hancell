@@ -73,6 +73,7 @@ Anything is possible at the Ministry of National Defense...
 
 ## Remaining Tasks
 ### Soon
+- Fix: Wrong flag being removed when cell opened via openings by chording
 - Redesign mode buttons
 - Add "pressed" image for better experience
 - Add difficulty choices(beginner, intermediate, expert) and custom boards
