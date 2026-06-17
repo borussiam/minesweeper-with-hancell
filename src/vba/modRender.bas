@@ -8,6 +8,7 @@ Public Sub InitBoard()
 
     InitTileLayer
     InitFaceLayout
+    InitCountersLayout
     InitModeButtonsLayout
 
     RenderHud
@@ -217,6 +218,62 @@ Public Sub RenderHud()
     InitModeButtonsLayout
 End Sub
 
+Private Sub InitCountersLayout()
+    Dim mineLeft As Double
+    Dim timeLeft As Double
+    Dim topPos As Double
+
+    mineLeft = BOARD_X + HUD_PADDING_X
+    timeLeft = BOARD_X + BoardW() - HUD_PADDING_X - COUNTER_BG_WIDTH
+    topPos = HUD_Y + (HUD_HEIGHT - COUNTER_BG_HEIGHT) / 2
+
+    SetCounterBg COUNTER_MINE_BG, mineLeft, topPos
+    SetCounterBg COUNTER_TIME_BG, timeLeft, topPos
+End Sub
+
+Private Sub SetCounterBg( _
+    ByVal bgName As String, _
+    ByVal leftPos As Double, _
+    ByVal topPos As Double _
+)
+    Dim beforeCount As Long
+    Dim shp As Shape
+
+    If Not HasShape(GameSheet, NUMS_BG) Then
+        MsgBox "원본 숫자 배경 Shape를 찾을 수 없습니다: " & NUMS_BG
+        Exit Sub
+    End If
+
+    DeleteShapeIfExists GameSheet, bgName
+
+    beforeCount = GameSheet.Shapes.Count
+
+    GameSheet.Shapes(NUMS_BG).Duplicate
+
+    If GameSheet.Shapes.Count <= beforeCount Then
+        MsgBox "숫자 배경 복제에 실패했습니다: " & bgName
+        Exit Sub
+    End If
+
+    Set shp = GameSheet.Shapes(GameSheet.Shapes.Count)
+
+    With shp
+        .Name = bgName
+        .Visible = msoTrue
+        .LockAspectRatio = msoFalse
+
+        .Left = leftPos
+        .Top = topPos
+        .Width = COUNTER_BG_WIDTH
+        .Height = COUNTER_BG_HEIGHT
+
+        .Line.Visible = msoFalse
+        .Placement = xlFreeFloating
+        .OnAction = ""
+        .ZOrder msoBringToFront
+    End With
+End Sub
+
 Public Sub RenderMineCounter()
     Dim minesLeft As Long
     Dim leftPos As Double
@@ -259,6 +316,8 @@ Private Sub RenderCounter( _
     Dim i As Long
     Dim ch As String
     Dim srcName As String
+    Dim digitLeft As Double
+    Dim digitTop As Double
 
     textValue = CounterText(value)
 
@@ -266,12 +325,15 @@ Private Sub RenderCounter( _
         ch = Mid$(textValue, i, 1)
         srcName = DigitSource(ch)
 
+        digitLeft = leftPos + DIGIT_OFFSET_X + (i - 1) * DIGIT_STEP
+        digitTop = topPos + DIGIT_OFFSET_Y
+
         SetDigitShape _
             prefix, _
             i, _
             srcName, _
-            leftPos + (i - 1) * (DIGIT_WIDTH + DIGIT_GAP), _
-            topPos
+            digitLeft, _
+            digitTop
     Next i
 End Sub
 
@@ -685,7 +747,7 @@ Private Function BoardH() As Double
 End Function
 
 Private Function CounterW() As Double
-    CounterW = COUNTER_DIGITS * DIGIT_WIDTH
+    CounterW = COUNTER_BG_WIDTH
 End Function
 
 Private Function TileX(ByVal c As Long) As Double

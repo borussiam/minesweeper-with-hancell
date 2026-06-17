@@ -59,7 +59,8 @@ Anything is possible at the Ministry of National Defense...
 ### 2026-06-14
 - Place digital number images for timer, mine count
 
-*Completed UI transition*
+### 2026-06-15
+- Place number background image
 
 ## Current Module Structure
 - `modConfig`: Configuration values (e.g. board size and mine count)
@@ -75,6 +76,8 @@ Anything is possible at the Ministry of National Defense...
 - Redesign mode buttons
 - Add "pressed" image for better experience
 - Add difficulty choices(beginner, intermediate, expert) and custom boards
+- Show detailed game info after the game
+  - exact time, (statistics)
 ### Later, if not never (in likely-to-be-done order)
 - Add Ranking
 - Add statistics(3BV, Efficiency, etc.)

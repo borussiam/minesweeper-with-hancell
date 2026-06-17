@@ -23,12 +23,23 @@ Public Const HUD_PADDING_X As Double = 10
 
 Public Const DIGIT_WIDTH As Double = 20
 Public Const DIGIT_HEIGHT As Double = 37.5
-Public Const DIGIT_GAP As Double = 0
+
+Public Const COUNTER_BG_WIDTH As Double = 72
+Public Const COUNTER_BG_HEIGHT As Double = 45
+
+Public Const DIGIT_OFFSET_X As Double = 3
+Public Const DIGIT_OFFSET_Y As Double = 0
+Public Const DIGIT_STEP As Double = 23
+
 Public Const COUNTER_DIGITS As Long = 3
+
+Public Const COUNTER_MINE_BG As String = "counter_mine_bg"
+Public Const COUNTER_TIME_BG As String = "counter_time_bg"
 
 Public Const COUNTER_MINE_PREFIX As String = "counter_mine_"
 Public Const COUNTER_TIME_PREFIX As String = "counter_time_"
 
+Public Const NUMS_BG As String = "nums_background"
 Public Const DIGIT_0 As String = "d0"
 Public Const DIGIT_1 As String = "d1"
 Public Const DIGIT_2 As String = "d2"

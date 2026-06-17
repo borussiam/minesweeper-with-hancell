@@ -65,6 +65,7 @@ Public Sub ArrangeTileSources()
         TILE_MINE, _
         TILE_MINE_RED, _
         TILE_MINE_WRONG _
+        NUMS_BG _
     )
 
     Set baseCell = GameSheet.Range("EA1")
