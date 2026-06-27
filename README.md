@@ -80,6 +80,7 @@ Anything is possible at the Ministry of National Defense...
 ### Soon
 - Fix: Wrong flag being removed when cell opened via openings by chording
 - Fix: Disable shape selection with right click
+- Initialization on file open
 - Redesign mode buttons
 - Add "pressed" image for better experience
 - Add difficulty choices(beginner, intermediate, expert) and custom boards
