@@ -53,6 +53,15 @@ Anything is possible at the Ministry of National Defense...
 - Optimize rendering for larger boards
   - Reduce unneccesary access, redundant rendering to various things
 
+### 2026-06-13
+- Place minesweeper-style images for mines, flags, numbers
+
+### 2026-06-14
+- Place digital number images for timer, mine count
+
+### 2026-06-15
+- Place number background image
+
 ## Current Module Structure
 - `modConfig`: Configuration values (e.g. board size and mine count)
 - `modState`: Game state array management
@@ -60,12 +69,16 @@ Anything is possible at the Ministry of National Defense...
 - `modBoard`: Mine placement and surrounding mine count calculation
 - `modRender`: Cell rendering
 - `modTimer` : Timer control
+- `modUtils` : Utility functions/subs, Test macros
 
 ## Remaining Tasks
 ### Soon
-- Edit gameboard and buttons layout & design
-  - Place images for mines, flags, board, and everyting else
+- Fix: Wrong flag being removed when cell opened via openings by chording
+- Redesign mode buttons
+- Add "pressed" image for better experience
 - Add difficulty choices(beginner, intermediate, expert) and custom boards
+- Show detailed game info after the game
+  - exact time, (statistics)
 ### Later, if not never (in likely-to-be-done order)
 - Add Ranking
 - Add statistics(3BV, Efficiency, etc.)

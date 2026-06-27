@@ -27,28 +27,35 @@ Private Sub StartGame(ByVal firstR As Long, ByVal firstC As Long)
     GameStatus = GAME_ONGOING
     RenderFace
     StartTimer
-    WriteStatus
 End Sub
 
 Public Sub SetOpenMode()
     CurrentMode = MODE_OPEN
-    WriteStatus
+    RenderModeButtons
+    ParkSelection
 End Sub
 
 Public Sub SetFlagMode()
     CurrentMode = MODE_FLAG
-    WriteStatus
+    RenderModeButtons
+    ParkSelection
 End Sub
 
 Public Function HandleCellSelect(ByVal Target As Range) As Boolean
     Dim r As Long
     Dim c As Long
 
-    If IsResetting Then Exit Function
-    If GameStatus = GAME_WIN Or GameStatus = GAME_OVER Then Exit Function
     If Not IsBoardCell(Target) Then Exit Function
 
     CellToBoardPos Target, r, c
+
+    HandleCellSelect = HandleBoardClick(r, c)
+End Function
+
+Public Function HandleBoardClick(ByVal r As Long, ByVal c As Long) As Boolean
+    If IsResetting Then Exit Function
+    If GameStatus = GAME_WIN Or GameStatus = GAME_OVER Then Exit Function
+    If Not IsInsideBoard(r, c) Then Exit Function
 
     If GameStatus = GAME_READY Then
         StartGame r, c
@@ -62,15 +69,33 @@ Public Function HandleCellSelect(ByVal Target As Range) As Boolean
         OpenCell r, c
     End If
 
-    HandleCellSelect = True
+    HandleBoardClick = True
 End Function
 
-Public Sub OpenCell(ByVal r As Long, ByVal c As Long)
+Public Sub TileClick()
+    Dim caller As String
+    Dim parts() As String
+    Dim r As Long
+    Dim c As Long
+
+    caller = CStr(Application.Caller)
+    parts = Split(caller, "_")
+
+    If UBound(parts) <> 2 Then Exit Sub
+    If parts(0) <> "tile" Then Exit Sub
+
+    r = CLng(parts(1))
+    c = CLng(parts(2))
+
+    HandleBoardClick r, c
+End Sub
+
+Private Sub OpenCell(ByVal r As Long, ByVal c As Long)
     RevealCell r, c
     FinishTurn
 End Sub
 
-Public Sub ChordCell(ByVal r As Long, ByVal c As Long)
+Private Sub ChordCell(ByVal r As Long, ByVal c As Long)
     Dim dr As Long, dc As Long
     Dim nr As Long, nc As Long
 
@@ -120,6 +145,7 @@ Private Sub RevealCell(ByVal startR As Long, ByVal startC As Long)
             HitMineRow = startR
             HitMineCol = startC
         End If
+        MarkChanged startR, startC
         Exit Sub
     End If
 
@@ -170,16 +196,19 @@ Private Sub FinishTurn()
         GameEndTick = Timer
         GameStatus = GAME_OVER
         StopTimer
-        RenderCell HitMineRow, HitMineCol, False
     ElseIf OpenedCount = BOARD_ROWS * BOARD_COLS - MINE_TOTAL Then
         GameEndTick = Timer
         GameStatus = GAME_WIN
         StopTimer
     End If
-    RenderFace
-    RenderBoard
-    WriteStatus
-    WriteTimer
+
+    If GameStatus = GAME_WIN Or GameStatus = GAME_OVER Then
+        RenderAllTiles
+    Else
+        RenderChangedTiles
+    End If
+
+    RenderHud
 End Sub
 
 Private Sub MarkOpened(ByVal r As Long, ByVal c As Long)
@@ -192,6 +221,8 @@ Private Sub MarkOpened(ByVal r As Long, ByVal c As Long)
 
     Opened(r, c) = True
     OpenedCount = OpenedCount + 1
+
+    MarkChanged r, c
 End Sub
 
 Public Sub ToggleFlag(ByVal r As Long, ByVal c As Long)
@@ -205,24 +236,7 @@ Public Sub ToggleFlag(ByVal r As Long, ByVal c As Long)
     Else
         FlaggedCount = FlaggedCount - 1
     End If
-    WriteStatus
 
-    RenderCell r, c, True
-End Sub
-
-Private Sub WaitSeconds(ByVal seconds As Double)
-    Dim startTick As Double
-    Dim elapsed As Double
-
-    startTick = Timer
-
-    Do
-        elapsed = Timer - startTick
-
-        If elapsed < 0 Then
-            elapsed = elapsed + 86400
-        End If
-
-        DoEvents
-    Loop While elapsed < seconds
+    RenderTile r, c
+    RenderMineCounter
 End Sub

@@ -5,6 +5,11 @@ Public Mine() As Boolean
 Public Opened() As Boolean
 Public Flagged() As Boolean
 Public MineCount() As Integer
+Public DrawnTile() As String
+
+Public ChangedR() As Long
+Public ChangedC() As Long
+Public ChangedCount As Long
 
 Public GameStatus As Long
 Public OpenedCount As Long
@@ -28,6 +33,11 @@ Public Sub InitState()
     ReDim Opened(1 To BOARD_ROWS, 1 To BOARD_COLS)
     ReDim Flagged(1 To BOARD_ROWS, 1 To BOARD_COLS)
     ReDim MineCount(1 To BOARD_ROWS, 1 To BOARD_COLS)
+    ReDim DrawnTile(1 To BOARD_ROWS, 1 To BOARD_COLS)
+    
+    ReDim ChangedR(1 To BOARD_ROWS * BOARD_COLS)
+    ReDim ChangedC(1 To BOARD_ROWS * BOARD_COLS)
+    ChangedCount = 0
 
     GameStatus = GAME_READY
     CurrentMode = MODE_OPEN
