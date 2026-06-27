@@ -1,4 +1,7 @@
 # minesweeper-with-hancell
+
+<img width="565" height="1086" alt="image" src="https://github.com/user-attachments/assets/717376bf-2953-4671-8c11-f55e67f52ce3" />
+
 Anything is possible at the Ministry of National Defense...
 - But due to restrictions of Hancell, disabling the right-click menu via `Cancel = True` is not possible...
   - so the plan is to provide open mode/flag mode seperately, just as in most mobile minesweeper apps.
@@ -74,6 +77,7 @@ Anything is possible at the Ministry of National Defense...
 ## Remaining Tasks
 ### Soon
 - Fix: Wrong flag being removed when cell opened via openings by chording
+- Fix: Disable shape selection with right click
 - Redesign mode buttons
 - Add "pressed" image for better experience
 - Add difficulty choices(beginner, intermediate, expert) and custom boards
