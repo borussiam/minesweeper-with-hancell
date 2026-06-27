@@ -1,10 +1,12 @@
 # minesweeper-with-hancell
 
-<img width="565" height="1086" alt="image" src="https://github.com/user-attachments/assets/717376bf-2953-4671-8c11-f55e67f52ce3" />
+<img width="853" height="535" alt="image" src="https://github.com/user-attachments/assets/73085230-4933-4162-a68c-9011fb60820d" />
 
 Anything is possible at the Ministry of National Defense...
 - But due to restrictions of Hancell, disabling the right-click menu via `Cancel = True` is not possible...
   - so the plan is to provide open mode/flag mode seperately, just as in most mobile minesweeper apps.
+ 
+**The .xlsm file only opens on Hancell, and does not work on Excel.**
 
 ## Current Implementation Status
 ### 2026-06-03: First Commit
